@@ -1,0 +1,42 @@
+{
+  // EOL/format
+  "files.eol": "\n",
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.formatOnSave": true,
+
+  // Formatters
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[typescriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[html]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[scss]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+
+  // ESLint + actions on save (marche avec @angular-eslint)
+  "eslint.validate": ["typescript", "html"],
+  "eslint.alwaysShowStatus": true,
+  "eslint.codeActionsOnSave.mode": "all",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
+  },
+
+  // Angular Language Service
+  "angular.experimental-ivy": true,
+  "typescript.tsdk": "node_modules/typescript/lib",
+
+  // GitLens (sobres et utiles)
+  "gitlens.currentLine.enabled": true,
+  "gitlens.hovers.currentLine.over": "line",
+
+  // Error Lens
+  "errorLens.enabled": true,
+
+  // Path Intellisense
+  "path-intellisense.autoSlashAfterDirectory": true,
+
+  // YAML (utile pour GitHub Actions/Azure DevOps)
+  "yaml.validate": true,
+  "yaml.format.enable": true
+}
