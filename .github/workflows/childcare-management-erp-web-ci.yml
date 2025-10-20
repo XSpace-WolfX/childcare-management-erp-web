@@ -1,0 +1,32 @@
+name: Web CI
+
+# 🔹 Quand le workflow doit se lancer
+on:
+  push:
+    branches: ['master']
+  pull_request:
+    branches: ['master']
+
+# 🔹 Le job principal (ce que GitHub doit faire)
+jobs:
+  build:
+    runs-on: ubuntu-latest # GitHub lance tout sur un petit serveur Linux temporaire
+
+    steps:
+      - name: Checkout (download code)
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js (install Node)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*' # il installe la version stable de Node
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci # équivalent à "npm install", mais plus rapide et propre
+
+      - name: Lint code
+        run: npm run lint --if-present # vérifie le code avec ESLint
+
+      - name: Build project
+        run: npm run build # compile ton Angular
