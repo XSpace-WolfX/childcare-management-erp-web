@@ -1,0 +1,40 @@
+<div class="families-list-container">
+  <header class="page-header">
+    <h1>Familles</h1>
+    <button type="button" class="create-button" (click)="createFamily()">+ Créer une famille</button>
+  </header>
+
+  @if (isLoading()) {
+  <div class="loading-state">
+    <p>Chargement des familles...</p>
+  </div>
+  } @if (error()) {
+  <div class="error-state">
+    <p>{{ error() }}</p>
+  </div>
+  } @if (!isLoading() && !error()) {
+  <div class="families-list">
+    @if (families().length === 0) {
+    <div class="empty-state">
+      <p>Aucune famille enregistrée</p>
+    </div>
+    } @else {
+    <div class="families-grid">
+      @for (family of families(); track family.id) {
+      <div class="family-card">
+        <h3>{{ family.familyName }}</h3>
+        <div class="family-info">
+          <p><strong>Responsables:</strong> {{ family.guardianNames.join(', ') }}</p>
+          <p><strong>Adresse:</strong> {{ family.address }}</p>
+          <p><strong>Téléphone:</strong> {{ family.phoneNumber }}</p>
+          <p><strong>Email:</strong> {{ family.email }}</p>
+          <p><strong>Enfants:</strong> {{ family.children?.length || 0 }}</p>
+        </div>
+        <button type="button" class="view-button" (click)="viewFamily(family.id)">Voir les détails →</button>
+      </div>
+      }
+    </div>
+    }
+  </div>
+  }
+</div>
