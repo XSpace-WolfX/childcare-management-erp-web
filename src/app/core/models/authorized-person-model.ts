@@ -1,0 +1,7 @@
+export interface AuthorizedPerson {
+  id: string;
+  firstName: string;
+  lastName: string;
+  phone?: string;
+  email?: string;
+}

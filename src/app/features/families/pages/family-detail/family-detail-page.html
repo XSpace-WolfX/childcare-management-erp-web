@@ -1,0 +1,331 @@
+<div class="family-detail-container">
+  <header class="page-header">
+    <button type="button" class="back-button" (click)="goBack()">← Retour aux familles</button>
+    <h1>Détails de la famille</h1>
+    @if (!isEditMode() && family()) {
+    <button type="button" class="edit-button" (click)="enterEditMode()">Modifier</button>
+    }
+  </header>
+
+  @if (isLoading()) {
+  <div class="loading-state">
+    <p>Chargement des détails de la famille...</p>
+  </div>
+  } @if (error()) {
+  <div class="error-state">
+    <p>{{ error() }}</p>
+    <button type="button" (click)="goBack()">Retour à la liste</button>
+  </div>
+  } @if (!isLoading() && !error() && family()) {
+  <div class="family-detail-content">
+    @if (successMessage()) {
+    <div class="success-message">{{ successMessage() }}</div>
+    } @if (!isEditMode()) {
+    <section class="family-info-section">
+      <h2>{{ family()!.familyName }}</h2>
+
+      <div class="info-grid">
+        <div class="info-item">
+          <strong>Responsables légaux:</strong>
+          <ul>
+            @for (guardian of family()!.guardianNames; track $index) {
+            <li>{{ guardian }}</li>
+            }
+          </ul>
+        </div>
+
+        <div class="info-item">
+          <strong>Adresse:</strong>
+          <p>{{ family()!.address }}</p>
+        </div>
+
+        <div class="info-item">
+          <strong>Téléphone:</strong>
+          <p>{{ family()!.phoneNumber }}</p>
+        </div>
+
+        <div class="info-item">
+          <strong>Email:</strong>
+          <p>{{ family()!.email }}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="children-section">
+      <h3>Enfants ({{ family()!.children?.length || 0 }})</h3>
+
+      @if (family()!.children && family()!.children!.length > 0) {
+      <div class="children-list">
+        @for (child of family()!.children; track child.id) {
+        <div class="child-card">
+          <h4>{{ child.firstName }} {{ child.lastName }}</h4>
+          <p><strong>Date de naissance:</strong> {{ child.birthDate | date: 'dd/MM/yyyy' }}</p>
+          <p><strong>Âge:</strong> {{ child.age }} ans</p>
+        </div>
+        }
+      </div>
+      } @else {
+      <div class="empty-state">
+        <p>Aucun enfant enregistré pour cette famille</p>
+      </div>
+      }
+    </section>
+
+    <section class="parents-section">
+      <h3>Parents ({{ family()!.parents?.length || 0 }})</h3>
+
+      @if (family()!.parents && family()!.parents!.length > 0) {
+      <div class="parents-list">
+        @for (parent of family()!.parents; track parent.id) {
+        <div class="parent-card">
+          <h4>{{ parent.firstName }} {{ parent.lastName }}</h4>
+          @if (parent.email) {
+          <p><strong>Email:</strong> {{ parent.email }}</p>
+          } @if (parent.phoneNumber) {
+          <p><strong>Téléphone:</strong> {{ parent.phoneNumber }}</p>
+          }
+
+          <div class="parent-subsections">
+            <div class="subsection">
+              <div class="subsection-header">
+                <h5>Situation personnelle</h5>
+                @if (editingPersonalSituation() !== parent.id) {
+                <button type="button" class="edit-subsection-button" (click)="enterEditPersonalSituation(parent.id)">
+                  {{ parent.personalSituation ? 'Modifier' : 'Ajouter' }}
+                </button>
+                }
+              </div>
+
+              @if (editingPersonalSituation() === parent.id) {
+              <form
+                [formGroup]="personalSituationForm"
+                (ngSubmit)="savePersonalSituation(parent.id)"
+                class="subsection-edit-form"
+              >
+                <div class="form-field">
+                  <label for="maritalStatus">Statut marital</label>
+                  <input type="text" id="maritalStatus" formControlName="maritalStatus" />
+                </div>
+                <div class="form-field">
+                  <label for="occupation">Profession</label>
+                  <input type="text" id="occupation" formControlName="occupation" />
+                </div>
+                <div class="form-field">
+                  <label for="employer">Employeur</label>
+                  <input type="text" id="employer" formControlName="employer" />
+                </div>
+                <div class="form-field">
+                  <label for="psNotes">Notes</label>
+                  <textarea id="psNotes" formControlName="notes" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                  <button type="submit" class="save-button">Enregistrer</button>
+                  <button type="button" class="cancel-button" (click)="cancelEditPersonalSituation()">Annuler</button>
+                </div>
+              </form>
+              } @else { @if (parent.personalSituation) {
+              <div class="subsection-content">
+                @if (parent.personalSituation.maritalStatus) {
+                <p><strong>Statut marital:</strong> {{ parent.personalSituation.maritalStatus }}</p>
+                } @if (parent.personalSituation.occupation) {
+                <p><strong>Profession:</strong> {{ parent.personalSituation.occupation }}</p>
+                } @if (parent.personalSituation.employer) {
+                <p><strong>Employeur:</strong> {{ parent.personalSituation.employer }}</p>
+                } @if (parent.personalSituation.notes) {
+                <p><strong>Notes:</strong> {{ parent.personalSituation.notes }}</p>
+                }
+              </div>
+              } @else {
+              <p class="not-provided">Non renseignée</p>
+              } }
+            </div>
+
+            <div class="subsection">
+              <div class="subsection-header">
+                <h5>Informations financières</h5>
+                @if (editingFinancialInformation() !== parent.id) {
+                <button type="button" class="edit-subsection-button" (click)="enterEditFinancialInformation(parent.id)">
+                  {{ parent.financialInformation ? 'Modifier' : 'Ajouter' }}
+                </button>
+                }
+              </div>
+
+              @if (editingFinancialInformation() === parent.id) {
+              <form
+                [formGroup]="financialInformationForm"
+                (ngSubmit)="saveFinancialInformation(parent.id)"
+                class="subsection-edit-form"
+              >
+                <div class="form-field">
+                  <label for="monthlyIncome">Revenu mensuel (€)</label>
+                  <input type="number" id="monthlyIncome" formControlName="monthlyIncome" />
+                </div>
+                <div class="form-field">
+                  <label for="employmentType">Type d'emploi</label>
+                  <input type="text" id="employmentType" formControlName="employmentType" />
+                </div>
+                <div class="form-field">
+                  <label for="fiNotes">Notes</label>
+                  <textarea id="fiNotes" formControlName="notes" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                  <button type="submit" class="save-button">Enregistrer</button>
+                  <button type="button" class="cancel-button" (click)="cancelEditFinancialInformation()">
+                    Annuler
+                  </button>
+                </div>
+              </form>
+              } @else { @if (parent.financialInformation) {
+              <div class="subsection-content">
+                @if (parent.financialInformation.monthlyIncome) {
+                <p><strong>Revenu mensuel:</strong> {{ parent.financialInformation.monthlyIncome }} €</p>
+                } @if (parent.financialInformation.employmentType) {
+                <p><strong>Type d'emploi:</strong> {{ parent.financialInformation.employmentType }}</p>
+                } @if (parent.financialInformation.notes) {
+                <p><strong>Notes:</strong> {{ parent.financialInformation.notes }}</p>
+                }
+              </div>
+              } @else {
+              <p class="not-provided">Non renseignées</p>
+              } }
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+      } @else {
+      <div class="empty-state">
+        <p>Aucun parent enregistré pour cette famille</p>
+      </div>
+      }
+    </section>
+    } @else {
+    <section class="family-edit-section">
+      <h2>Modifier la famille</h2>
+
+      <form [formGroup]="familyEditForm" (ngSubmit)="saveFamily()">
+        <div class="form-field">
+          <label for="familyName">Nom de la famille *</label>
+          <input type="text" id="familyName" formControlName="familyName" required />
+        </div>
+
+        <div class="form-field">
+          <label for="guardianNames">Responsables légaux (séparés par des virgules) *</label>
+          <input type="text" id="guardianNames" formControlName="guardianNames" required />
+        </div>
+
+        <div class="form-field">
+          <label for="address">Adresse *</label>
+          <input type="text" id="address" formControlName="address" required />
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label for="phoneNumber">Téléphone *</label>
+            <input type="tel" id="phoneNumber" formControlName="phoneNumber" required />
+          </div>
+
+          <div class="form-field">
+            <label for="email">Email *</label>
+            <input type="email" id="email" formControlName="email" required />
+          </div>
+        </div>
+
+        <h3>Enfants</h3>
+        <div formArrayName="children">
+          @for (childControl of childrenFormArray.controls; track $index) {
+          <div class="child-edit-card" [formGroupName]="$index">
+            <h4>Enfant {{ $index + 1 }}</h4>
+            <div class="form-row">
+              <div class="form-field">
+                <label [for]="'firstName-' + $index">Prénom *</label>
+                <input type="text" [id]="'firstName-' + $index" formControlName="firstName" required />
+              </div>
+              <div class="form-field">
+                <label [for]="'lastName-' + $index">Nom *</label>
+                <input type="text" [id]="'lastName-' + $index" formControlName="lastName" required />
+              </div>
+            </div>
+            <div class="form-field">
+              <label [for]="'birthDate-' + $index">Date de naissance *</label>
+              <input type="date" [id]="'birthDate-' + $index" formControlName="birthDate" required />
+            </div>
+          </div>
+          }
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="save-button">Enregistrer</button>
+          <button type="button" class="cancel-button" (click)="cancelEdit()">Annuler</button>
+        </div>
+      </form>
+    </section>
+    } @if (getChildrenWithAuthorizedPersons().length > 0) {
+    <section class="authorized-persons-display-section">
+      <h3>Personnes autorisées</h3>
+      @for (child of getChildrenWithAuthorizedPersons(); track child.id) {
+      <div class="child-authorized-persons">
+        <h4>{{ child.firstName }} {{ child.lastName }}</h4>
+        <ul class="authorized-persons-list">
+          @for (person of getAuthorizedPersonsForChild(child.id); track person.id) {
+          <li class="authorized-person-item">
+            <span>{{ person.firstName }} {{ person.lastName }}</span>
+            @if (person.phone) {
+            <span class="person-detail"> - {{ person.phone }}</span>
+            } @if (person.email) {
+            <span class="person-detail"> - {{ person.email }}</span>
+            }
+          </li>
+          }
+        </ul>
+      </div>
+      }
+    </section>
+    } @if (!isEditMode() && family()!.children && family()!.children!.length > 0) {
+    <section class="authorized-persons-section">
+      <h3>Ajouter une personne autorisée</h3>
+
+      <form class="authorized-person-form" [formGroup]="authorizedPersonForm" (ngSubmit)="submitAuthorizedPerson()">
+        <div class="form-row">
+          <div class="form-field">
+            <label for="firstName">Prénom *</label>
+            <input type="text" id="firstName" formControlName="firstName" required />
+          </div>
+
+          <div class="form-field">
+            <label for="lastName">Nom *</label>
+            <input type="text" id="lastName" formControlName="lastName" required />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label for="phone">Téléphone</label>
+            <input type="tel" id="phone" formControlName="phone" />
+          </div>
+
+          <div class="form-field">
+            <label for="email">Email</label>
+            <input type="email" id="email" formControlName="email" />
+          </div>
+        </div>
+
+        <fieldset class="form-field">
+          <legend>Enfants liés *</legend>
+          <div class="children-checkboxes">
+            @for (child of family()!.children; track child.id) {
+            <label class="checkbox-label">
+              <input type="checkbox" [checked]="isChildSelected(child.id)" (change)="toggleChildSelection(child.id)" />
+              {{ child.firstName }} {{ child.lastName }}
+            </label>
+            }
+          </div>
+        </fieldset>
+
+        <button type="submit" class="submit-button">Ajouter la personne autorisée</button>
+      </form>
+    </section>
+    }
+  </div>
+  }
+</div>

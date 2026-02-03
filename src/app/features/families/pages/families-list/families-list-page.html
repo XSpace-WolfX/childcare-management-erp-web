@@ -29,6 +29,35 @@
           <p><strong>Téléphone:</strong> {{ family.phoneNumber }}</p>
           <p><strong>Email:</strong> {{ family.email }}</p>
           <p><strong>Enfants:</strong> {{ family.children?.length || 0 }}</p>
+
+          @if (getChildrenWithAuthorizedPersons(family.id).length > 0) {
+          <div class="authorized-persons-section">
+            <p><strong>Personnes autorisées:</strong></p>
+            @for (child of getChildrenWithAuthorizedPersons(family.id); track child.id) {
+            <div class="child-authorized-persons">
+              <p class="child-name">{{ child.firstName }} {{ child.lastName }}:</p>
+              <ul class="authorized-persons-list">
+                @for (person of getAuthorizedPersonsForChild(child.id); track person.id) {
+                <li class="authorized-person-item">
+                  <span>{{ person.firstName }} {{ person.lastName }}</span>
+                  @if (person.phone) {
+                  <span class="person-detail"> - {{ person.phone }}</span>
+                  }
+                  <button
+                    type="button"
+                    class="remove-button"
+                    (click)="removeAuthorizedPerson(person.id, child.id)"
+                    title="Retirer"
+                  >
+                    ✕
+                  </button>
+                </li>
+                }
+              </ul>
+            </div>
+            }
+          </div>
+          }
         </div>
         <button type="button" class="view-button" (click)="viewFamily(family.id)">Voir les détails →</button>
       </div>

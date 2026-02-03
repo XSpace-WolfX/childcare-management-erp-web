@@ -1,4 +1,5 @@
-import { CreateChildCommand } from './create-child.command';
+import { CreateChildCommand } from './create-child-command';
+import { CreateParentCommand } from './create-parent-command';
 
 export interface CreateFamilyCommand {
   familyName: string;
@@ -7,4 +8,5 @@ export interface CreateFamilyCommand {
   phoneNumber: string;
   email: string;
   children: CreateChildCommand[];
+  parents?: CreateParentCommand[];
 }

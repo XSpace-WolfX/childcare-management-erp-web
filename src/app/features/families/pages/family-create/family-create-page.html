@@ -105,6 +105,119 @@
       </div>
     </section>
 
+    <section class="form-section">
+      <div class="section-header">
+        <h2>Parents (au moins 1 requis)</h2>
+        @if (parents.length < 2) {
+        <button type="button" class="add-child-button" (click)="addParent()">+ Ajouter Parent 2</button>
+        }
+      </div>
+
+      <div formArrayName="parents" class="parents-list">
+        @for (parent of parents.controls; track $index) {
+        <div [formGroupName]="$index" class="parent-form-group">
+          <h3>Parent {{ $index + 1 }}</h3>
+
+          <div class="parent-basic-fields">
+            <div class="form-field">
+              <label [for]="'parentFirstName-' + $index">Prénom *</label>
+              <input [id]="'parentFirstName-' + $index" type="text" formControlName="firstName" placeholder="Prénom" />
+              @if (parent.get('firstName')?.invalid && parent.get('firstName')?.touched) {
+              <span class="error-message">Le prénom est requis</span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label [for]="'parentLastName-' + $index">Nom *</label>
+              <input [id]="'parentLastName-' + $index" type="text" formControlName="lastName" placeholder="Nom" />
+              @if (parent.get('lastName')?.invalid && parent.get('lastName')?.touched) {
+              <span class="error-message">Le nom est requis</span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label [for]="'parentEmail-' + $index">Email</label>
+              <input [id]="'parentEmail-' + $index" type="email" formControlName="email" placeholder="Email" />
+            </div>
+
+            <div class="form-field">
+              <label [for]="'parentPhone-' + $index">Téléphone</label>
+              <input [id]="'parentPhone-' + $index" type="tel" formControlName="phoneNumber" placeholder="Téléphone" />
+            </div>
+          </div>
+
+          <div class="parent-subsections">
+            <div formGroupName="personalSituation" class="subsection">
+              <h4>Situation personnelle (optionnel)</h4>
+              <div class="form-field">
+                <label [for]="'maritalStatus-' + $index">Statut marital</label>
+                <input
+                  [id]="'maritalStatus-' + $index"
+                  type="text"
+                  formControlName="maritalStatus"
+                  placeholder="Ex: Marié(e)"
+                />
+              </div>
+              <div class="form-field">
+                <label [for]="'occupation-' + $index">Profession</label>
+                <input
+                  [id]="'occupation-' + $index"
+                  type="text"
+                  formControlName="occupation"
+                  placeholder="Ex: Ingénieur"
+                />
+              </div>
+              <div class="form-field">
+                <label [for]="'employer-' + $index">Employeur</label>
+                <input [id]="'employer-' + $index" type="text" formControlName="employer" placeholder="Ex: TechCorp" />
+              </div>
+              <div class="form-field">
+                <label [for]="'psNotes-' + $index">Notes</label>
+                <textarea
+                  [id]="'psNotes-' + $index"
+                  formControlName="notes"
+                  rows="2"
+                  placeholder="Notes additionnelles"
+                ></textarea>
+              </div>
+            </div>
+
+            <div formGroupName="financialInformation" class="subsection">
+              <h4>Informations financières (optionnel)</h4>
+              <div class="form-field">
+                <label [for]="'monthlyIncome-' + $index">Revenu mensuel (€)</label>
+                <input
+                  [id]="'monthlyIncome-' + $index"
+                  type="number"
+                  formControlName="monthlyIncome"
+                  placeholder="Ex: 3500"
+                />
+              </div>
+              <div class="form-field">
+                <label [for]="'employmentType-' + $index">Type d'emploi</label>
+                <input
+                  [id]="'employmentType-' + $index"
+                  type="text"
+                  formControlName="employmentType"
+                  placeholder="Ex: CDI temps plein"
+                />
+              </div>
+              <div class="form-field">
+                <label [for]="'fiNotes-' + $index">Notes</label>
+                <textarea
+                  [id]="'fiNotes-' + $index"
+                  formControlName="notes"
+                  rows="2"
+                  placeholder="Notes additionnelles"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+    </section>
+
     <div class="form-actions">
       <button type="button" class="cancel-button" (click)="cancel()">Annuler</button>
       <button type="submit" class="submit-button" [disabled]="isLoading()">
