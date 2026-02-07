@@ -1,13 +1,13 @@
 import { InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Family } from '../models/family-model';
-import { CreateFamilyCommand } from '../models/create-family-command';
-import { UpdateFamilyCommand } from '../models/update-family-command';
-import { AuthorizedPerson } from '../models/authorized-person-model';
-import { CreateAuthorizedPersonCommand } from '../models/create-authorized-person-command';
-import { AuthorizedPersonChildLink } from '../models/authorized-person-child-link-model';
-import { UpsertPersonalSituationCommand } from '../models/upsert-personal-situation-command';
-import { UpsertFinancialInformationCommand } from '../models/upsert-financial-information-command';
+import { Family, CreateFamilyCommand, UpdateFamilyCommand } from '../models/family-model';
+import {
+  AuthorizedPerson,
+  CreateAuthorizedPersonCommand,
+  AuthorizedPersonChildLink,
+} from '../models/authorized-person-model';
+import { UpsertPersonalSituationCommand } from '../models/personal-situation-model';
+import { UpsertFinancialInformationCommand } from '../models/financial-information-model';
 import { Parent } from '../models/parent-model';
 
 export interface FamiliesApi {

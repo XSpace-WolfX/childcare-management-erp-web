@@ -3,7 +3,7 @@ import { ReactiveFormsModule, FormGroup, FormArray, FormControl, Validators } fr
 import { Router } from '@angular/router';
 import { FamiliesStore } from '../../families-store';
 import { CreateFamilyCommand } from '../../../../core';
-import { CreateParentCommand } from '../../../../core/models/create-parent-command';
+import { CreateParentCommand } from '../../../../core/models/parent-model';
 
 interface ChildFormModel {
   firstName: string;

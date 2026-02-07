@@ -3,14 +3,11 @@ import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { FamiliesStore } from '../../families-store';
-import { CreateAuthorizedPersonCommand } from '../../../../core/models/create-authorized-person-command';
-import { UpdateFamilyCommand } from '../../../../core/models/update-family-command';
-import { UpdateChildCommand } from '../../../../core/models/update-child-command';
-import { AuthorizedPerson } from '../../../../core/models/authorized-person-model';
-import { Child } from '../../../../core/models/child-model';
-import { Family } from '../../../../core/models/family-model';
-import { UpsertPersonalSituationCommand } from '../../../../core/models/upsert-personal-situation-command';
-import { UpsertFinancialInformationCommand } from '../../../../core/models/upsert-financial-information-command';
+import { CreateAuthorizedPersonCommand, AuthorizedPerson } from '../../../../core/models/authorized-person-model';
+import { UpdateFamilyCommand, Family } from '../../../../core/models/family-model';
+import { UpdateChildCommand, Child } from '../../../../core/models/child-model';
+import { UpsertPersonalSituationCommand } from '../../../../core/models/personal-situation-model';
+import { UpsertFinancialInformationCommand } from '../../../../core/models/financial-information-model';
 
 @Component({
   selector: 'ccm-family-detail',

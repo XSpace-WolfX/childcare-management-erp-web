@@ -2,12 +2,14 @@ import { Injectable, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Observable } from 'rxjs';
 import { Family, FAMILIES_API, CreateFamilyCommand } from '../../core';
-import { UpdateFamilyCommand } from '../../core/models/update-family-command';
-import { AuthorizedPerson } from '../../core/models/authorized-person-model';
-import { CreateAuthorizedPersonCommand } from '../../core/models/create-authorized-person-command';
-import { AuthorizedPersonChildLink } from '../../core/models/authorized-person-child-link-model';
-import { UpsertPersonalSituationCommand } from '../../core/models/upsert-personal-situation-command';
-import { UpsertFinancialInformationCommand } from '../../core/models/upsert-financial-information-command';
+import { UpdateFamilyCommand } from '../../core/models/family-model';
+import {
+  AuthorizedPerson,
+  CreateAuthorizedPersonCommand,
+  AuthorizedPersonChildLink,
+} from '../../core/models/authorized-person-model';
+import { UpsertPersonalSituationCommand } from '../../core/models/personal-situation-model';
+import { UpsertFinancialInformationCommand } from '../../core/models/financial-information-model';
 import { Parent } from '../../core/models/parent-model';
 
 @Injectable()

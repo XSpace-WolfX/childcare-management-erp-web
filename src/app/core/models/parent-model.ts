@@ -10,3 +10,12 @@ export interface Parent {
   personalSituation?: PersonalSituation;
   financialInformation?: FinancialInformation;
 }
+
+export interface CreateParentCommand {
+  firstName: string;
+  lastName: string;
+  email?: string;
+  phoneNumber?: string;
+  personalSituation?: PersonalSituation;
+  financialInformation?: FinancialInformation;
+}
