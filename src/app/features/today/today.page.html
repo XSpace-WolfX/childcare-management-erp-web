@@ -1,0 +1,150 @@
+<div class="today-container">
+  <header class="page-header">
+    <h1>Tableau de bord du jour</h1>
+    <p class="date">{{ getCurrentDate() }}</p>
+  </header>
+
+  <div class="search-section">
+    <label for="child-search" class="search-label">Rechercher un enfant</label>
+    <input
+      id="child-search"
+      type="text"
+      class="search-input"
+      placeholder="Nom de l'enfant..."
+      [value]="store.searchQuery()"
+      (input)="onSearchInput($event)"
+    />
+  </div>
+
+  @if (store.isLoading()) {
+  <div class="loading">Chargement des données de présence...</div>
+  } @else {
+  <div class="dashboard-content">
+    @if (store.hasActiveSearch()) {
+    <section class="search-results-section">
+      <h2>Résultats ({{ store.searchResults().length }})</h2>
+      @if (store.searchResults().length === 0) {
+      <p class="no-data">Aucun enfant trouvé.</p>
+      } @else {
+      <div class="children-list">
+        @for (child of store.searchResults(); track child.id) {
+        <div class="child-item search-result-item">
+          <div class="child-info">
+            <div class="child-name">{{ child.name }}</div>
+            <div class="child-status">Statut : {{ getChildStatus(child) }}</div>
+          </div>
+          <div class="action-container">
+            @if (canCheckIn(child)) {
+            <button class="action-btn" (click)="store.markAsArrived(child.id)">Arrivé</button>
+            } @else if (canCheckOut(child)) {
+            <button class="action-btn" (click)="store.markAsPickedUp(child.id)">Récupéré</button>
+            } @else {
+            <span class="no-action-label">Aucune action</span>
+            }
+          </div>
+        </div>
+        }
+      </div>
+      }
+    </section>
+    } @else {
+    <section class="summary-section">
+      <h2>Résumé quotidien</h2>
+      <div class="summary-cards">
+        <div class="summary-card expected">
+          <div class="card-value">{{ store.summary().expectedCount }}</div>
+          <div class="card-label">Attendus aujourd'hui</div>
+        </div>
+        <div class="summary-card present">
+          <div class="card-value">{{ store.summary().presentCount }}</div>
+          <div class="card-label">Présents</div>
+        </div>
+        <div class="summary-card absent">
+          <div class="card-value">{{ store.summary().absentCount }}</div>
+          <div class="card-label">Absents</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="alerts-section">
+      <h2>Alertes critiques</h2>
+      @if (store.criticalAlerts().length === 0) {
+      <p class="no-alerts">Aucune alerte critique pour aujourd'hui.</p>
+      } @else {
+      <div class="alerts-summary">
+        <div class="summary-counts">
+          <span class="count-item">
+            <strong>{{ alertCounts().total }}</strong> alerte{{ alertCounts().total > 1 ? 's' : '' }} au total
+          </span>
+          <span class="count-separator">•</span>
+          <span class="count-item">
+            <strong>{{ alertCounts().allergies }}</strong> Allergie{{ alertCounts().allergies > 1 ? 's' : '' }}
+          </span>
+          <span class="count-separator">•</span>
+          <span class="count-item"> <strong>{{ alertCounts().pai }}</strong> PAI </span>
+          <span class="count-separator">•</span>
+          <span class="count-item">
+            <strong>{{ alertCounts().authorizations }}</strong> Autorisation{{ alertCounts().authorizations > 1 ? 's' :
+            '' }}
+          </span>
+        </div>
+      </div>
+      <div class="alerts-list">
+        @for (alert of displayedAlerts(); track alert.childId + alert.alertType) {
+        <div class="alert-item" [class]="'alert-' + alert.alertType">
+          <span class="alert-icon">⚠️</span>
+          <div class="alert-content">
+            <strong>{{ alert.childName }}</strong>
+            <span class="alert-message">{{ alert.message }}</span>
+          </div>
+        </div>
+        }
+      </div>
+      @if (hasMoreAlerts()) {
+      <button class="toggle-alerts-btn" (click)="toggleAlerts()">
+        {{ alertsExpanded() ? 'Réduire' : 'Afficher tout (' + (alertCounts().total - 5) + ' de plus)' }}
+      </button>
+      } }
+    </section>
+
+    <section class="expected-section">
+      <h2>Attendus mais non arrivés</h2>
+      @if (store.expectedNotArrived().length === 0) {
+      <p class="no-data">Tous les enfants attendus sont arrivés.</p>
+      } @else {
+      <div class="children-list">
+        @for (child of store.expectedNotArrived(); track child.id) {
+        <div class="child-item">
+          <div class="child-info">
+            <div class="child-name">{{ child.name }}</div>
+            <div class="child-time">Attendu : {{ child.expectedArrivalTime }}</div>
+          </div>
+          <button class="action-btn" (click)="store.markAsArrived(child.id)">Arrivé</button>
+        </div>
+        }
+      </div>
+      }
+    </section>
+
+    <section class="present-section">
+      <h2>Présents mais non récupérés</h2>
+      @if (store.presentNotPickedUp().length === 0) {
+      <p class="no-data">Aucun enfant en attente de récupération.</p>
+      } @else {
+      <div class="children-list">
+        @for (child of store.presentNotPickedUp(); track child.id) {
+        <div class="child-item">
+          <div class="child-info">
+            <div class="child-name">{{ child.name }}</div>
+            <div class="child-time">Arrivée : {{ child.checkInTime }}</div>
+          </div>
+          <button class="action-btn" (click)="store.markAsPickedUp(child.id)">Récupéré</button>
+        </div>
+        }
+      </div>
+      }
+    </section>
+    }
+  </div>
+  }
+</div>

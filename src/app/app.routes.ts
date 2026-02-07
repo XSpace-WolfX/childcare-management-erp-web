@@ -4,6 +4,10 @@ import { FAMILIES_API, MockFamiliesApi } from './core';
 
 export const routes: Routes = [
   {
+    path: 'today',
+    loadChildren: () => import('./features/today/today.routes').then((m) => m.todayRoutes),
+  },
+  {
     path: 'families',
     providers: [FamiliesStore, { provide: FAMILIES_API, useClass: MockFamiliesApi }],
     children: [
@@ -24,5 +28,5 @@ export const routes: Routes = [
       },
     ],
   },
-  { path: '', pathMatch: 'full', redirectTo: 'families' },
+  { path: '', pathMatch: 'full', redirectTo: 'today' },
 ];
