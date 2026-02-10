@@ -13,6 +13,7 @@ import { Parent } from '../models/parent-model';
 export interface FamiliesApi {
   getFamilies(): Observable<Family[]>;
   getFamilyById(id: string): Observable<Family | null>;
+  getFamilyByChildId(childId: string): Observable<Family | null>;
   createFamily(command: CreateFamilyCommand): Observable<Family>;
   updateFamily(command: UpdateFamilyCommand): Observable<Family>;
   createAuthorizedPerson(command: CreateAuthorizedPersonCommand): Observable<AuthorizedPerson>;

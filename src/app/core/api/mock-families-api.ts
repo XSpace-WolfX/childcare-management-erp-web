@@ -134,6 +134,11 @@ export class MockFamiliesApi implements FamiliesApi {
     return of(family).pipe(delay(200));
   }
 
+  getFamilyByChildId(childId: string): Observable<Family | null> {
+    const family = this.families.find((f) => f.children?.some((c) => c.id === childId)) || null;
+    return of(family).pipe(delay(200));
+  }
+
   createFamily(command: CreateFamilyCommand): Observable<Family> {
     const newFamilyId = (this.families.length + 1).toString();
 

@@ -1,6 +1,7 @@
 <div class="family-detail-container">
   <header class="page-header">
     <button type="button" class="back-button" (click)="goBack()">← Retour aux familles</button>
+    <button type="button" class="back-button" (click)="navigateToDashboard()">← Retour au tableau de bord</button>
     <h1>Détails de la famille</h1>
     @if (!isEditMode() && family()) {
     <button type="button" class="edit-button" (click)="enterEditMode()">Modifier</button>
@@ -57,7 +58,7 @@
       @if (family()!.children && family()!.children!.length > 0) {
       <div class="children-list">
         @for (child of family()!.children; track child.id) {
-        <div class="child-card">
+        <div class="child-card" [id]="'child-' + child.id" [class.highlighted-child]="isChildHighlighted(child.id)">
           <h4>{{ child.firstName }} {{ child.lastName }}</h4>
           <p><strong>Date de naissance:</strong> {{ child.birthDate | date: 'dd/MM/yyyy' }}</p>
           <p><strong>Âge:</strong> {{ child.age }} ans</p>

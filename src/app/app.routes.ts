@@ -28,5 +28,11 @@ export const routes: Routes = [
       },
     ],
   },
+  {
+    path: 'children/:childId',
+    providers: [FamiliesStore, { provide: FAMILIES_API, useClass: MockFamiliesApi }],
+    loadComponent: () =>
+      import('./features/families/pages/family-detail/family-detail-page').then((m) => m.FamilyDetailPage),
+  },
   { path: '', pathMatch: 'full', redirectTo: 'today' },
 ];

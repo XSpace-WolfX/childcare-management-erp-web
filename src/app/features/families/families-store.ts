@@ -67,6 +67,27 @@ export class FamiliesStore {
     });
   }
 
+  loadFamilyByChildId(childId: string): void {
+    this._isLoading.set(true);
+    this._error.set(null);
+    this._selectedFamily.set(null);
+
+    this.repository.getFamilyByChildId(childId).subscribe({
+      next: (family) => {
+        this._selectedFamily.set(family);
+        this._isLoading.set(false);
+        if (!family) {
+          this._error.set('Family not found');
+        }
+      },
+      error: (err) => {
+        this._error.set('Failed to load family');
+        this._isLoading.set(false);
+        console.error('Error loading family:', err);
+      },
+    });
+  }
+
   createFamily(command: CreateFamilyCommand): Observable<Family> {
     this._isLoading.set(true);
     this._error.set(null);

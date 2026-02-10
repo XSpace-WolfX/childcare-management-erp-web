@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, effect } from '@angular/core';
+import { Component, inject, OnInit, AfterViewInit, signal, effect } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
@@ -15,7 +15,7 @@ import { UpsertFinancialInformationCommand } from '../../../../core/models/finan
   imports: [DatePipe, ReactiveFormsModule],
   templateUrl: './family-detail-page.html',
 })
-export class FamilyDetailPage implements OnInit {
+export class FamilyDetailPage implements OnInit, AfterViewInit {
   private store = inject(FamiliesStore);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -29,6 +29,7 @@ export class FamilyDetailPage implements OnInit {
   authorizedPersonsCache = signal<Map<string, AuthorizedPerson[]>>(new Map());
 
   isEditMode = signal(false);
+  highlightedChildId = signal<string | null>(null);
   familyEditForm!: FormGroup;
   authorizedPersonForm: FormGroup;
   selectedChildIds = signal<string[]>([]);
@@ -98,8 +99,14 @@ export class FamilyDetailPage implements OnInit {
 
   ngOnInit(): void {
     const familyId = this.route.snapshot.paramMap.get('familyId');
-    if (familyId) {
-      this.store.loadAuthorizedPersonChildLinks();
+    const childId = this.route.snapshot.paramMap.get('childId');
+
+    this.store.loadAuthorizedPersonChildLinks();
+
+    if (childId) {
+      this.highlightedChildId.set(childId);
+      this.store.loadFamilyByChildId(childId);
+    } else if (familyId) {
       this.store.loadFamily(familyId);
     } else {
       this.router.navigate(['/families']);
@@ -121,8 +128,27 @@ export class FamilyDetailPage implements OnInit {
     }
   }
 
+  ngAfterViewInit(): void {
+    if (this.highlightedChildId()) {
+      setTimeout(() => {
+        const element = document.getElementById(`child-${this.highlightedChildId()}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 300);
+    }
+  }
+
+  isChildHighlighted(childId: string): boolean {
+    return this.highlightedChildId() === childId;
+  }
+
   goBack(): void {
     this.router.navigate(['/families']);
+  }
+
+  navigateToDashboard(): void {
+    this.router.navigate(['/today']);
   }
 
   toggleChildSelection(childId: string): void {

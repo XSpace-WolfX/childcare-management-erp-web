@@ -30,7 +30,17 @@
         @for (child of store.searchResults(); track child.id) {
         <div class="child-item search-result-item">
           <div class="child-info">
-            <div class="child-name">{{ child.name }}</div>
+            <div
+              class="child-name"
+              style="cursor: pointer; color: #007bff; text-decoration: underline"
+              tabindex="0"
+              role="button"
+              (click)="navigateToChild(child.id)"
+              (keyup.enter)="navigateToChild(child.id)"
+              (keyup.space)="navigateToChild(child.id)"
+            >
+              {{ child.name }}
+            </div>
             <div class="child-status">Statut : {{ getChildStatus(child) }}</div>
           </div>
           <div class="action-container">
@@ -116,7 +126,17 @@
         @for (child of store.expectedNotArrived(); track child.id) {
         <div class="child-item">
           <div class="child-info">
-            <div class="child-name">{{ child.name }}</div>
+            <div
+              class="child-name"
+              style="cursor: pointer; color: #007bff; text-decoration: underline"
+              tabindex="0"
+              role="button"
+              (click)="navigateToChild(child.id)"
+              (keyup.enter)="navigateToChild(child.id)"
+              (keyup.space)="navigateToChild(child.id)"
+            >
+              {{ child.name }}
+            </div>
             <div class="child-time">Attendu : {{ child.expectedArrivalTime }}</div>
           </div>
           <button class="action-btn" (click)="store.markAsArrived(child.id)">Arrivé</button>
@@ -135,7 +155,17 @@
         @for (child of store.presentNotPickedUp(); track child.id) {
         <div class="child-item">
           <div class="child-info">
-            <div class="child-name">{{ child.name }}</div>
+            <div
+              class="child-name"
+              style="cursor: pointer; color: #007bff; text-decoration: underline"
+              tabindex="0"
+              role="button"
+              (click)="navigateToChild(child.id)"
+              (keyup.enter)="navigateToChild(child.id)"
+              (keyup.space)="navigateToChild(child.id)"
+            >
+              {{ child.name }}
+            </div>
             <div class="child-time">Arrivée : {{ child.checkInTime }}</div>
           </div>
           <button class="action-btn" (click)="store.markAsPickedUp(child.id)">Récupéré</button>

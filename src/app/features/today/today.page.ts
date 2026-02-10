@@ -1,4 +1,5 @@
 import { Component, inject, signal, computed } from '@angular/core';
+import { Router } from '@angular/router';
 import { TodayStore } from './today.store';
 import { ChildAttendanceView } from './models/attendance-view.model';
 
@@ -11,6 +12,7 @@ import { ChildAttendanceView } from './models/attendance-view.model';
 })
 export class TodayPage {
   protected readonly store = inject(TodayStore);
+  private readonly router = inject(Router);
   protected readonly alertsExpanded = signal(false);
   private readonly MAX_COLLAPSED_ALERTS = 5;
 
@@ -77,5 +79,9 @@ export class TodayPage {
 
   protected hasNoAction(child: ChildAttendanceView): boolean {
     return !this.canCheckIn(child) && !this.canCheckOut(child);
+  }
+
+  protected navigateToChild(childId: string): void {
+    this.router.navigate(['/children', childId]);
   }
 }
