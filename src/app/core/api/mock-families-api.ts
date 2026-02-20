@@ -11,131 +11,43 @@ import {
 import { UpsertPersonalSituationCommand } from '../models/personal-situation-model';
 import { UpsertFinancialInformationCommand } from '../models/financial-information-model';
 import { Parent } from '../models/parent-model';
+import {
+  getAllFamilies,
+  getFamilyById,
+  getFamilyByChildId,
+  addFamily,
+  updateFamilyInDb,
+  getAuthorizedPersons,
+  addAuthorizedPerson,
+  getAuthorizedPersonChildLinks,
+  addAuthorizedPersonChildLink,
+} from '../mock/childcare-mock-db';
 
 @Injectable()
 export class MockFamiliesApi implements FamiliesApi {
-  private authorizedPersons: AuthorizedPerson[] = [];
-  private authorizedPersonChildLinks: AuthorizedPersonChildLink[] = [];
+  private get families(): Family[] {
+    return getAllFamilies();
+  }
 
-  private families: Family[] = [
-    {
-      id: '1',
-      familyName: 'Famille Dupont',
-      guardianNames: ['Marie Dupont', 'Jean Dupont'],
-      address: '12 Rue de la Paix, 75001 Paris',
-      phoneNumber: '+33 1 23 45 67 89',
-      email: 'dupont.famille@example.fr',
-      children: [
-        {
-          id: 'c1',
-          firstName: 'Sophie',
-          lastName: 'Dupont',
-          birthDate: new Date('2020-03-15'),
-          age: 4,
-          familyId: '1',
-        },
-        {
-          id: 'c2',
-          firstName: 'Lucas',
-          lastName: 'Dupont',
-          birthDate: new Date('2022-07-22'),
-          age: 2,
-          familyId: '1',
-        },
-      ],
-      parents: [
-        {
-          id: 'p1',
-          firstName: 'Marie',
-          lastName: 'Dupont',
-          email: 'marie.dupont@example.fr',
-          phoneNumber: '+33 6 12 34 56 78',
-          personalSituation: {
-            maritalStatus: 'Mariée',
-            occupation: 'Ingénieure informatique',
-            employer: 'TechCorp France',
-            notes: 'Horaires flexibles, télétravail 2 jours par semaine',
-          },
-          financialInformation: {
-            monthlyIncome: 4500,
-            employmentType: 'CDI temps plein',
-            notes: 'Revenus stables, éligible aux aides',
-          },
-        },
-        {
-          id: 'p2',
-          firstName: 'Jean',
-          lastName: 'Dupont',
-          email: 'jean.dupont@example.fr',
-          phoneNumber: '+33 6 98 76 54 32',
-          personalSituation: {
-            maritalStatus: 'Marié',
-            occupation: 'Professeur des écoles',
-            employer: 'Éducation Nationale',
-            notes: 'Disponible pendant les vacances scolaires',
-          },
-          financialInformation: {
-            monthlyIncome: 3200,
-            employmentType: 'Fonctionnaire',
-            notes: 'Revenus garantis, avantages sociaux',
-          },
-        },
-      ],
-    },
-    {
-      id: '2',
-      familyName: 'Famille Martin',
-      guardianNames: ['Claire Martin'],
-      address: '45 Avenue des Champs, 69002 Lyon',
-      phoneNumber: '+33 4 78 90 12 34',
-      email: 'c.martin@example.fr',
-      children: [
-        {
-          id: 'c3',
-          firstName: 'Emma',
-          lastName: 'Martin',
-          birthDate: new Date('2021-11-08'),
-          age: 3,
-          familyId: '2',
-        },
-      ],
-      parents: [
-        {
-          id: 'p3',
-          firstName: 'Claire',
-          lastName: 'Martin',
-          email: 'c.martin@example.fr',
-          phoneNumber: '+33 4 78 90 12 34',
-          personalSituation: {
-            maritalStatus: 'Célibataire',
-            occupation: 'Infirmière',
-            employer: 'Hôpital de Lyon',
-          },
-        },
-      ],
-    },
-    {
-      id: '3',
-      familyName: 'Famille Bernard',
-      guardianNames: ['Thomas Bernard', 'Julie Bernard'],
-      address: '78 Boulevard Victor Hugo, 31000 Toulouse',
-      phoneNumber: '+33 5 61 23 45 67',
-      email: 'bernard.family@example.fr',
-      children: [],
-    },
-  ];
+  private get authorizedPersons(): AuthorizedPerson[] {
+    return getAuthorizedPersons();
+  }
+
+  private get authorizedPersonChildLinks(): AuthorizedPersonChildLink[] {
+    return getAuthorizedPersonChildLinks();
+  }
 
   getFamilies(): Observable<Family[]> {
     return of(this.families).pipe(delay(300));
   }
 
   getFamilyById(id: string): Observable<Family | null> {
-    const family = this.families.find((f) => f.id === id) || null;
+    const family = getFamilyById(id);
     return of(family).pipe(delay(200));
   }
 
   getFamilyByChildId(childId: string): Observable<Family | null> {
-    const family = this.families.find((f) => f.children?.some((c) => c.id === childId)) || null;
+    const family = getFamilyByChildId(childId);
     return of(family).pipe(delay(200));
   }
 
@@ -175,7 +87,7 @@ export class MockFamiliesApi implements FamiliesApi {
       parents,
     };
 
-    this.families.push(newFamily);
+    addFamily(newFamily);
     return of(newFamily).pipe(delay(400));
   }
 
@@ -207,7 +119,7 @@ export class MockFamiliesApi implements FamiliesApi {
       children: updatedChildren,
     };
 
-    this.families[index] = updatedFamily;
+    updateFamilyInDb(updatedFamily);
     return of(updatedFamily).pipe(delay(400));
   }
 
@@ -220,10 +132,10 @@ export class MockFamiliesApi implements FamiliesApi {
       email: command.email,
     };
 
-    this.authorizedPersons.push(newPerson);
+    addAuthorizedPerson(newPerson);
 
     command.childIds.forEach((childId) => {
-      this.authorizedPersonChildLinks.push({
+      addAuthorizedPersonChildLink({
         authorizedPersonId: newPerson.id,
         childId,
       });

@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, AfterViewInit, signal, effect } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { FamiliesStore } from '../../families-store';
 import { CreateAuthorizedPersonCommand, AuthorizedPerson } from '../../../../core/models/authorized-person-model';
@@ -8,12 +9,14 @@ import { UpdateFamilyCommand, Family } from '../../../../core/models/family-mode
 import { UpdateChildCommand, Child } from '../../../../core/models/child-model';
 import { UpsertPersonalSituationCommand } from '../../../../core/models/personal-situation-model';
 import { UpsertFinancialInformationCommand } from '../../../../core/models/financial-information-model';
+import { ToolsDrawerComponent } from '../../../../shared/components/tools-drawer/tools-drawer-component';
 
 @Component({
   selector: 'ccm-family-detail',
   standalone: true,
-  imports: [DatePipe, ReactiveFormsModule],
+  imports: [DatePipe, ReactiveFormsModule, ToolsDrawerComponent],
   templateUrl: './family-detail-page.html',
+  styleUrls: ['./family-detail-page.scss'],
 })
 export class FamilyDetailPage implements OnInit, AfterViewInit {
   private store = inject(FamiliesStore);
@@ -28,8 +31,11 @@ export class FamilyDetailPage implements OnInit, AfterViewInit {
 
   authorizedPersonsCache = signal<Map<string, AuthorizedPerson[]>>(new Map());
 
+  private routeParams = toSignal(this.route.paramMap);
+
   isEditMode = signal(false);
-  highlightedChildId = signal<string | null>(null);
+  selectedChildId = signal<string | null>(null);
+  isDrawerOpen = signal(false);
   familyEditForm!: FormGroup;
   authorizedPersonForm: FormGroup;
   selectedChildIds = signal<string[]>([]);
@@ -59,6 +65,22 @@ export class FamilyDetailPage implements OnInit, AfterViewInit {
       const currentFamily = this.family();
       if (currentFamily && this.isEditMode()) {
         this.initializeFamilyEditForm(currentFamily);
+      }
+    });
+
+    effect(() => {
+      const params = this.routeParams();
+      if (params) {
+        const childId = params.get('childId');
+        const familyId = params.get('familyId');
+
+        if (childId) {
+          this.selectedChildId.set(childId);
+          this.store.loadFamilyByChildId(childId);
+        } else if (familyId) {
+          this.selectedChildId.set(null);
+          this.store.loadFamily(familyId);
+        }
       }
     });
   }
@@ -98,17 +120,13 @@ export class FamilyDetailPage implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    const familyId = this.route.snapshot.paramMap.get('familyId');
-    const childId = this.route.snapshot.paramMap.get('childId');
-
     this.store.loadAuthorizedPersonChildLinks();
 
-    if (childId) {
-      this.highlightedChildId.set(childId);
-      this.store.loadFamilyByChildId(childId);
-    } else if (familyId) {
-      this.store.loadFamily(familyId);
-    } else {
+    const params = this.route.snapshot.paramMap;
+    const childId = params.get('childId');
+    const familyId = params.get('familyId');
+
+    if (!childId && !familyId) {
       this.router.navigate(['/families']);
     }
   }
@@ -129,9 +147,9 @@ export class FamilyDetailPage implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    if (this.highlightedChildId()) {
+    if (this.selectedChildId()) {
       setTimeout(() => {
-        const element = document.getElementById(`child-${this.highlightedChildId()}`);
+        const element = document.getElementById(`child-${this.selectedChildId()}`);
         if (element) {
           element.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
@@ -139,8 +157,12 @@ export class FamilyDetailPage implements OnInit, AfterViewInit {
     }
   }
 
-  isChildHighlighted(childId: string): boolean {
-    return this.highlightedChildId() === childId;
+  isChildSelected(childId: string): boolean {
+    return this.selectedChildId() === childId;
+  }
+
+  navigateToChild(childId: string): void {
+    this.router.navigate(['/children', childId]);
   }
 
   goBack(): void {
@@ -162,7 +184,7 @@ export class FamilyDetailPage implements OnInit, AfterViewInit {
     this.selectedChildIds.set([...selected]);
   }
 
-  isChildSelected(childId: string): boolean {
+  isChildSelectedForAuthorization(childId: string): boolean {
     return this.selectedChildIds().includes(childId);
   }
 
@@ -362,5 +384,13 @@ export class FamilyDetailPage implements OnInit, AfterViewInit {
         this.successMessage.set(null);
       },
     });
+  }
+
+  toggleDrawer(): void {
+    this.isDrawerOpen.update((open) => !open);
+  }
+
+  closeDrawer(): void {
+    this.isDrawerOpen.set(false);
   }
 }

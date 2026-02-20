@@ -1,0 +1,188 @@
+.families-list-container {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+
+  h1 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .page-subtitle {
+    font-size: 0.95rem;
+    color: #666;
+    margin: 0;
+  }
+}
+
+.loading-state,
+.error-state,
+.empty-state {
+  padding: 3rem;
+  text-align: center;
+  color: #666;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.error-state {
+  background: #fff3f3;
+  color: #c33;
+}
+
+.families-table-wrapper {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.families-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    background: #f5f5f5;
+    border-bottom: 2px solid #e0e0e0;
+
+    th {
+      padding: 1rem;
+      text-align: left;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  tbody {
+    tr.family-row {
+      border-bottom: 1px solid #e8e8e8;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+
+      &:hover {
+        background-color: #f9f9f9;
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+
+    td {
+      padding: 1rem;
+      font-size: 0.9rem;
+      color: #333;
+      vertical-align: top;
+    }
+  }
+}
+
+.parent-cell {
+  font-weight: 500;
+  min-width: 150px;
+}
+
+.contact-cell {
+  min-width: 200px;
+  color: #555;
+  font-size: 0.875rem;
+}
+
+.address-cell {
+  min-width: 180px;
+  color: #555;
+  font-size: 0.875rem;
+}
+
+.children-cell {
+  min-width: 200px;
+}
+
+.children-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  align-items: center;
+
+  .child-link {
+    color: #0066cc;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.15s ease;
+    padding: 2px 4px;
+    border-radius: 3px;
+    display: inline-block;
+
+    &:hover {
+      color: #004499;
+      background-color: #e6f2ff;
+    }
+
+    &:focus {
+      outline: 2px solid #0066cc;
+      outline-offset: 2px;
+    }
+  }
+
+  .separator {
+    color: #999;
+  }
+}
+
+.status-cell {
+  text-align: center;
+  min-width: 100px;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &.status-ok {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  &.status-incomplet {
+    background-color: #fff3e0;
+    color: #e65100;
+  }
+}
+
+.empty-value {
+  color: #999;
+  font-style: italic;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 1200px) {
+  .families-table {
+    font-size: 0.85rem;
+
+    th,
+    td {
+      padding: 0.75rem;
+    }
+  }
+
+  .parent-cell,
+  .contact-cell,
+  .address-cell,
+  .children-cell {
+    min-width: auto;
+  }
+}

@@ -1,14 +1,14 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
-import { TodayStore } from './today.store';
-import { ChildAttendanceView } from './models/attendance-view.model';
+import { TodayStore } from './today-store';
+import { ChildAttendanceView } from './models/attendance-view-model';
 
 @Component({
   selector: 'ccm-today',
   standalone: true,
   imports: [],
-  templateUrl: './today.page.html',
-  styleUrls: ['./today.page.scss'],
+  templateUrl: './today-page.html',
+  styleUrls: ['./today-page.scss'],
 })
 export class TodayPage {
   protected readonly store = inject(TodayStore);

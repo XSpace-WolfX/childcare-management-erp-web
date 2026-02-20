@@ -1,0 +1,13 @@
+<div class="app-shell">
+  <header class="app-header">
+    <button type="button" class="tools-btn" (click)="toggleDrawer()" aria-label="Outils">
+      Outils
+    </button>
+  </header>
+
+  <main class="app-content">
+    <router-outlet />
+  </main>
+
+  <ccm-tools-drawer [isOpen]="isDrawerOpen()" (closeDrawer)="closeDrawer()" />
+</div>

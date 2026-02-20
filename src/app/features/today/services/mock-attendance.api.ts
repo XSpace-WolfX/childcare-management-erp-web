@@ -1,14 +1,26 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, delay } from 'rxjs';
-import { ChildAttendanceView } from '../models/attendance-view.model';
+import { ChildAttendanceView } from '../models/attendance-view-model';
+import { getAllChildren } from '../../../core/mock/childcare-mock-db';
 
 @Injectable()
 export class MockAttendanceApi {
   getAttendanceForToday(): Observable<ChildAttendanceView[]> {
-    const mockData: ChildAttendanceView[] = [
+    const allChildren = getAllChildren();
+
+    const attendanceStates: Record<
+      string,
       {
-        id: '1',
-        name: 'Emma Johnson',
+        status: 'present' | 'expected' | 'absent';
+        expectedArrivalTime: string;
+        checkInTime?: string;
+        checkOutTime?: string;
+        hasAllergies: boolean;
+        hasPAI: boolean;
+        missingAuthorizations: boolean;
+      }
+    > = {
+      'child-1': {
         status: 'present',
         expectedArrivalTime: '08:00',
         checkInTime: '07:55',
@@ -16,9 +28,7 @@ export class MockAttendanceApi {
         hasPAI: false,
         missingAuthorizations: false,
       },
-      {
-        id: '2',
-        name: 'Liam Smith',
+      'child-2': {
         status: 'present',
         expectedArrivalTime: '08:30',
         checkInTime: '08:25',
@@ -26,36 +36,28 @@ export class MockAttendanceApi {
         hasPAI: true,
         missingAuthorizations: false,
       },
-      {
-        id: '3',
-        name: 'Olivia Brown',
+      'child-3': {
         status: 'expected',
         expectedArrivalTime: '09:00',
         hasAllergies: false,
         hasPAI: false,
         missingAuthorizations: true,
       },
-      {
-        id: '4',
-        name: 'Noah Davis',
+      'child-4': {
         status: 'expected',
         expectedArrivalTime: '08:45',
         hasAllergies: true,
         hasPAI: false,
         missingAuthorizations: false,
       },
-      {
-        id: '5',
-        name: 'Ava Wilson',
+      'child-5': {
         status: 'absent',
         expectedArrivalTime: '08:00',
         hasAllergies: false,
         hasPAI: false,
         missingAuthorizations: false,
       },
-      {
-        id: '6',
-        name: 'Ethan Martinez',
+      'child-6': {
         status: 'present',
         expectedArrivalTime: '07:30',
         checkInTime: '07:35',
@@ -63,9 +65,7 @@ export class MockAttendanceApi {
         hasPAI: false,
         missingAuthorizations: false,
       },
-      {
-        id: '7',
-        name: 'Sophia Garcia',
+      'child-7': {
         status: 'present',
         expectedArrivalTime: '08:15',
         checkInTime: '08:10',
@@ -73,36 +73,31 @@ export class MockAttendanceApi {
         hasPAI: true,
         missingAuthorizations: false,
       },
-      {
-        id: '8',
-        name: 'Mason Rodriguez',
+      'child-8': {
         status: 'expected',
         expectedArrivalTime: '09:30',
         hasAllergies: false,
         hasPAI: false,
         missingAuthorizations: false,
       },
-      {
-        id: '9',
-        name: 'Isabella Lopez',
-        status: 'present',
-        expectedArrivalTime: '08:00',
-        checkInTime: '08:05',
-        checkOutTime: undefined,
-        hasAllergies: false,
-        hasPAI: false,
-        missingAuthorizations: true,
-      },
-      {
-        id: '10',
-        name: 'Lucas Hernandez',
-        status: 'absent',
-        expectedArrivalTime: '08:30',
-        hasAllergies: false,
-        hasPAI: false,
-        missingAuthorizations: false,
-      },
-    ];
+    };
+
+    const mockData: ChildAttendanceView[] = allChildren
+      .filter((child) => attendanceStates[child.id])
+      .map((child) => {
+        const state = attendanceStates[child.id];
+        return {
+          id: child.id,
+          name: `${child.firstName} ${child.lastName}`,
+          status: state.status,
+          expectedArrivalTime: state.expectedArrivalTime,
+          checkInTime: state.checkInTime,
+          checkOutTime: state.checkOutTime,
+          hasAllergies: state.hasAllergies,
+          hasPAI: state.hasPAI,
+          missingAuthorizations: state.missingAuthorizations,
+        };
+      });
 
     return of(mockData).pipe(delay(300));
   }

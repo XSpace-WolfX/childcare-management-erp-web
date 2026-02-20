@@ -1,13 +1,19 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { FamiliesStore } from '../../families-store';
-import { AuthorizedPerson } from '../../../../core/models/authorized-person-model';
-import { Child } from '../../../../core/models/child-model';
+import { Family } from '../../../../core/models/family-model';
+
+interface FamilyRowStatus {
+  status: 'ok' | 'incomplet';
+  label: string;
+}
 
 @Component({
   selector: 'ccm-families-list',
   standalone: true,
+  imports: [],
   templateUrl: './families-list-page.html',
+  styleUrls: ['./families-list-page.scss'],
 })
 export class FamiliesListPage implements OnInit {
   private store = inject(FamiliesStore);
@@ -16,63 +22,56 @@ export class FamiliesListPage implements OnInit {
   families = this.store.families;
   isLoading = this.store.isLoading;
   error = this.store.error;
-  authorizedPersonChildLinks = this.store.authorizedPersonChildLinks;
 
-  authorizedPersonsCache = signal<Map<string, AuthorizedPerson[]>>(new Map());
+  familiesWithStatus = computed(() => {
+    return this.families().map((family) => ({
+      family,
+      status: this.deriveFamilyStatus(family),
+    }));
+  });
 
   ngOnInit(): void {
     this.store.loadFamilies();
-    this.store.loadAuthorizedPersonChildLinks();
-    this.loadAllAuthorizedPersons();
   }
 
-  private loadAllAuthorizedPersons(): void {
-    this.families().forEach((family) => {
-      family.children?.forEach((child) => {
-        this.store.getAuthorizedPersonsByChildId(child.id).subscribe({
-          next: (persons) => {
-            const cache = this.authorizedPersonsCache();
-            cache.set(child.id, persons);
-            this.authorizedPersonsCache.set(new Map(cache));
-          },
-        });
-      });
-    });
+  private deriveFamilyStatus(family: Family): FamilyRowStatus {
+    const hasIncompleteData =
+      !family.phoneNumber || !family.email || !family.address || !family.children || family.children.length === 0;
+
+    if (hasIncompleteData) {
+      return { status: 'incomplet', label: 'Incomplet' };
+    }
+
+    return { status: 'ok', label: 'OK' };
   }
 
-  viewFamily(familyId: string): void {
-    this.router.navigate(['/families', familyId]);
+  navigateToChild(childId: string, event: Event): void {
+    event.stopPropagation();
+    this.router.navigate(['/children', childId]);
   }
 
-  createFamily(): void {
-    this.router.navigate(['/families/new']);
+  navigateToFirstChild(family: Family): void {
+    if (family.children && family.children.length > 0) {
+      this.router.navigate(['/children', family.children[0].id]);
+    }
   }
 
-  getAuthorizedPersonsForChild(childId: string): AuthorizedPerson[] {
-    return this.authorizedPersonsCache().get(childId) || [];
+  getParent1(family: Family): string {
+    return family.guardianNames[0] || 'Non renseigné';
   }
 
-  getChildrenWithAuthorizedPersons(familyId: string): Child[] {
-    const family = this.families().find((f) => f.id === familyId);
-    if (!family || !family.children) return [];
-
-    return family.children.filter((child) => {
-      const links = this.authorizedPersonChildLinks();
-      return links.some((link) => link.childId === child.id);
-    });
+  getParent2(family: Family): string | null {
+    return family.guardianNames[1] || null;
   }
 
-  removeAuthorizedPerson(authorizedPersonId: string, childId: string): void {
-    this.store.removeAuthorizedPersonLink(authorizedPersonId, childId).subscribe({
-      next: () => {
-        this.store.getAuthorizedPersonsByChildId(childId).subscribe({
-          next: (persons) => {
-            const cache = this.authorizedPersonsCache();
-            cache.set(childId, persons);
-            this.authorizedPersonsCache.set(new Map(cache));
-          },
-        });
-      },
-    });
+  getMainContact(family: Family): string {
+    const parts: string[] = [];
+    if (family.phoneNumber) parts.push(family.phoneNumber);
+    if (family.email) parts.push(family.email);
+    return parts.length > 0 ? parts.join(' • ') : 'Non renseigné';
+  }
+
+  getAddressSummary(family: Family): string {
+    return family.address || 'Non renseignée';
   }
 }

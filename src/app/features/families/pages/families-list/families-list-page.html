@@ -1,7 +1,7 @@
 <div class="families-list-container">
   <header class="page-header">
-    <h1>Familles</h1>
-    <button type="button" class="create-button" (click)="createFamily()">+ Créer une famille</button>
+    <h1>Vue administrative des familles</h1>
+    <p class="page-subtitle">Supervision des dossiers familiaux</p>
   </header>
 
   @if (isLoading()) {
@@ -13,56 +13,65 @@
     <p>{{ error() }}</p>
   </div>
   } @if (!isLoading() && !error()) {
-  <div class="families-list">
-    @if (families().length === 0) {
+  <div class="families-table-wrapper">
+    @if (familiesWithStatus().length === 0) {
     <div class="empty-state">
       <p>Aucune famille enregistrée</p>
     </div>
     } @else {
-    <div class="families-grid">
-      @for (family of families(); track family.id) {
-      <div class="family-card">
-        <h3>{{ family.familyName }}</h3>
-        <div class="family-info">
-          <p><strong>Responsables:</strong> {{ family.guardianNames.join(', ') }}</p>
-          <p><strong>Adresse:</strong> {{ family.address }}</p>
-          <p><strong>Téléphone:</strong> {{ family.phoneNumber }}</p>
-          <p><strong>Email:</strong> {{ family.email }}</p>
-          <p><strong>Enfants:</strong> {{ family.children?.length || 0 }}</p>
-
-          @if (getChildrenWithAuthorizedPersons(family.id).length > 0) {
-          <div class="authorized-persons-section">
-            <p><strong>Personnes autorisées:</strong></p>
-            @for (child of getChildrenWithAuthorizedPersons(family.id); track child.id) {
-            <div class="child-authorized-persons">
-              <p class="child-name">{{ child.firstName }} {{ child.lastName }}:</p>
-              <ul class="authorized-persons-list">
-                @for (person of getAuthorizedPersonsForChild(child.id); track person.id) {
-                <li class="authorized-person-item">
-                  <span>{{ person.firstName }} {{ person.lastName }}</span>
-                  @if (person.phone) {
-                  <span class="person-detail"> - {{ person.phone }}</span>
-                  }
-                  <button
-                    type="button"
-                    class="remove-button"
-                    (click)="removeAuthorizedPerson(person.id, child.id)"
-                    title="Retirer"
-                  >
-                    ✕
-                  </button>
-                </li>
-                }
-              </ul>
-            </div>
+    <table class="families-table">
+      <thead>
+        <tr>
+          <th>Parent 1</th>
+          <th>Parent 2</th>
+          <th>Contact principal</th>
+          <th>Adresse</th>
+          <th>Enfants</th>
+          <th>Statut</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of familiesWithStatus(); track item.family.id) {
+        <tr class="family-row" (click)="navigateToFirstChild(item.family)">
+          <td class="parent-cell">{{ getParent1(item.family) }}</td>
+          <td class="parent-cell">
+            @if (getParent2(item.family)) { {{ getParent2(item.family) }} } @else {
+            <span class="empty-value">—</span>
             }
-          </div>
-          }
-        </div>
-        <button type="button" class="view-button" (click)="viewFamily(family.id)">Voir les détails →</button>
-      </div>
-      }
-    </div>
+          </td>
+          <td class="contact-cell">{{ getMainContact(item.family) }}</td>
+          <td class="address-cell">{{ getAddressSummary(item.family) }}</td>
+          <td class="children-cell">
+            @if (item.family.children && item.family.children.length > 0) {
+            <div class="children-list">
+              @for (child of item.family.children; track child.id; let isLast = $last) {
+              <span
+                class="child-link"
+                tabindex="0"
+                role="button"
+                (click)="navigateToChild(child.id, $event)"
+                (keydown.enter)="navigateToChild(child.id, $event)"
+                (keydown.space)="navigateToChild(child.id, $event)"
+                >{{ child.firstName }} {{ child.lastName }}</span
+              >@if (!isLast) {<span class="separator">, </span>} }
+            </div>
+            } @else {
+            <span class="empty-value">Aucun enfant</span>
+            }
+          </td>
+          <td class="status-cell">
+            <span
+              class="status-badge"
+              [class.status-ok]="item.status.status === 'ok'"
+              [class.status-incomplet]="item.status.status === 'incomplet'"
+            >
+              {{ item.status.label }}
+            </span>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
     }
   </div>
   }

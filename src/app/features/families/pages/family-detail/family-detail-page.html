@@ -1,11 +1,18 @@
 <div class="family-detail-container">
   <header class="page-header">
-    <button type="button" class="back-button" (click)="goBack()">← Retour aux familles</button>
-    <button type="button" class="back-button" (click)="navigateToDashboard()">← Retour au tableau de bord</button>
-    <h1>Détails de la famille</h1>
-    @if (!isEditMode() && family()) {
-    <button type="button" class="edit-button" (click)="enterEditMode()">Modifier</button>
-    }
+    <div class="header-actions">
+      <div class="back-buttons">
+        <button type="button" class="back-button" (click)="goBack()">← Retour aux familles</button>
+        <button type="button" class="back-button" (click)="navigateToDashboard()">← Retour au tableau de bord</button>
+      </div>
+      <button type="button" class="tools-btn" (click)="toggleDrawer()" aria-label="Outils">Outils</button>
+    </div>
+    <div class="header-title-row">
+      <h1>Détails de la famille</h1>
+      @if (!isEditMode() && family()) {
+      <button type="button" class="edit-button" (click)="enterEditMode()">Modifier</button>
+      }
+    </div>
   </header>
 
   @if (isLoading()) {
@@ -58,7 +65,16 @@
       @if (family()!.children && family()!.children!.length > 0) {
       <div class="children-list">
         @for (child of family()!.children; track child.id) {
-        <div class="child-card" [id]="'child-' + child.id" [class.highlighted-child]="isChildHighlighted(child.id)">
+        <div
+          class="child-card"
+          [id]="'child-' + child.id"
+          [class.selected-child]="isChildSelected(child.id)"
+          (click)="navigateToChild(child.id)"
+          (keyup.enter)="navigateToChild(child.id)"
+          (keyup.space)="navigateToChild(child.id)"
+          tabindex="0"
+          role="button"
+        >
           <h4>{{ child.firstName }} {{ child.lastName }}</h4>
           <p><strong>Date de naissance:</strong> {{ child.birthDate | date: 'dd/MM/yyyy' }}</p>
           <p><strong>Âge:</strong> {{ child.age }} ans</p>
@@ -316,7 +332,11 @@
           <div class="children-checkboxes">
             @for (child of family()!.children; track child.id) {
             <label class="checkbox-label">
-              <input type="checkbox" [checked]="isChildSelected(child.id)" (change)="toggleChildSelection(child.id)" />
+              <input
+                type="checkbox"
+                [checked]="isChildSelectedForAuthorization(child.id)"
+                (change)="toggleChildSelection(child.id)"
+              />
               {{ child.firstName }} {{ child.lastName }}
             </label>
             }
@@ -329,4 +349,6 @@
     }
   </div>
   }
+
+  <ccm-tools-drawer [isOpen]="isDrawerOpen()" (closeDrawer)="closeDrawer()" />
 </div>

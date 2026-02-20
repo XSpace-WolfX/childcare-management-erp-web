@@ -1,7 +1,7 @@
 import { Injectable, computed, signal, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MockAttendanceApi } from './services/mock-attendance.api';
-import { ChildAttendanceView, AttendanceSummary, CriticalAlert } from './models/attendance-view.model';
+import { ChildAttendanceView, AttendanceSummary, CriticalAlert } from './models/attendance-view-model';
 
 @Injectable()
 export class TodayStore {
