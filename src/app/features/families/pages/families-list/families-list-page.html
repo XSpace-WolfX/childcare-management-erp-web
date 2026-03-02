@@ -13,10 +13,30 @@
     <p>{{ error() }}</p>
   </div>
   } @if (!isLoading() && !error()) {
+  <div class="search-filter-section">
+    <div class="search-box">
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Rechercher (parent, enfant, téléphone…)"
+        [value]="searchQuery()"
+        (input)="onSearchInput($event)"
+        aria-label="Rechercher une famille"
+      />
+    </div>
+    <label class="filter-toggle">
+      <input type="checkbox" [checked]="showIncompleteOnly()" (change)="toggleIncompleteFilter()" />
+      <span>Incomplet uniquement</span>
+    </label>
+  </div>
+
   <div class="families-table-wrapper">
-    @if (familiesWithStatus().length === 0) {
+    @if (filteredFamilies().length === 0) {
     <div class="empty-state">
-      <p>Aucune famille enregistrée</p>
+      <p>
+        {{ searchQuery() || showIncompleteOnly() ? 'Aucune famille ne correspond aux critères' : 'Aucune famille
+        enregistrée' }}
+      </p>
     </div>
     } @else {
     <table class="families-table">
@@ -31,7 +51,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (item of familiesWithStatus(); track item.family.id) {
+        @for (item of filteredFamilies(); track item.family.id) {
         <tr class="family-row" (click)="navigateToFirstChild(item.family)">
           <td class="parent-cell">{{ getParent1(item.family) }}</td>
           <td class="parent-cell">

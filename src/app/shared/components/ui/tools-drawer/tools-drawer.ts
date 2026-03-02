@@ -5,8 +5,8 @@ import { Router } from '@angular/router';
   selector: 'ccm-tools-drawer',
   standalone: true,
   imports: [],
-  templateUrl: './tools-drawer-component.html',
-  styleUrls: ['./tools-drawer-component.scss'],
+  templateUrl: './tools-drawer.html',
+  styleUrls: ['./tools-drawer.scss'],
 })
 export class ToolsDrawerComponent {
   private readonly router = inject(Router);

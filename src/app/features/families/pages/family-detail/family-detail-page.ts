@@ -9,12 +9,11 @@ import { UpdateFamilyCommand, Family } from '../../../../core/models/family-mode
 import { UpdateChildCommand, Child } from '../../../../core/models/child-model';
 import { UpsertPersonalSituationCommand } from '../../../../core/models/personal-situation-model';
 import { UpsertFinancialInformationCommand } from '../../../../core/models/financial-information-model';
-import { ToolsDrawerComponent } from '../../../../shared/components/tools-drawer/tools-drawer-component';
 
 @Component({
   selector: 'ccm-family-detail',
   standalone: true,
-  imports: [DatePipe, ReactiveFormsModule, ToolsDrawerComponent],
+  imports: [DatePipe, ReactiveFormsModule],
   templateUrl: './family-detail-page.html',
   styleUrls: ['./family-detail-page.scss'],
 })
@@ -35,7 +34,6 @@ export class FamilyDetailPage implements OnInit, AfterViewInit {
 
   isEditMode = signal(false);
   selectedChildId = signal<string | null>(null);
-  isDrawerOpen = signal(false);
   familyEditForm!: FormGroup;
   authorizedPersonForm: FormGroup;
   selectedChildIds = signal<string[]>([]);
@@ -384,13 +382,5 @@ export class FamilyDetailPage implements OnInit, AfterViewInit {
         this.successMessage.set(null);
       },
     });
-  }
-
-  toggleDrawer(): void {
-    this.isDrawerOpen.update((open) => !open);
-  }
-
-  closeDrawer(): void {
-    this.isDrawerOpen.set(false);
   }
 }

@@ -5,7 +5,6 @@
         <button type="button" class="back-button" (click)="goBack()">← Retour aux familles</button>
         <button type="button" class="back-button" (click)="navigateToDashboard()">← Retour au tableau de bord</button>
       </div>
-      <button type="button" class="tools-btn" (click)="toggleDrawer()" aria-label="Outils">Outils</button>
     </div>
     <div class="header-title-row">
       <h1>Détails de la famille</h1>
@@ -349,6 +348,4 @@
     }
   </div>
   }
-
-  <ccm-tools-drawer [isOpen]="isDrawerOpen()" (closeDrawer)="closeDrawer()" />
 </div>

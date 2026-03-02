@@ -5,7 +5,7 @@ import { FAMILIES_API, MockFamiliesApi } from './core';
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./shared/layouts/app-shell/app-shell.component').then((m) => m.AppShellComponent),
+    loadComponent: () => import('./shared/components/layouts/app-shell/app-shell').then((m) => m.AppShellComponent),
     children: [
       {
         path: 'today',

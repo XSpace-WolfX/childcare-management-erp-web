@@ -1,13 +1,13 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { ToolsDrawerComponent } from '../../components/tools-drawer/tools-drawer-component';
+import { ToolsDrawerComponent } from '../../ui/tools-drawer/tools-drawer';
 
 @Component({
   selector: 'ccm-app-shell',
   standalone: true,
   imports: [RouterOutlet, ToolsDrawerComponent],
-  templateUrl: './app-shell.component.html',
-  styleUrls: ['./app-shell.component.scss'],
+  templateUrl: './app-shell.html',
+  styleUrls: ['./app-shell.scss'],
 })
 export class AppShellComponent {
   protected readonly isDrawerOpen = signal(false);

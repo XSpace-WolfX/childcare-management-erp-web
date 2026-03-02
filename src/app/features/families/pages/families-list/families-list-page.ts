@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, computed } from '@angular/core';
+import { Component, inject, OnInit, computed, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { FamiliesStore } from '../../families-store';
 import { Family } from '../../../../core/models/family-model';
@@ -23,6 +23,9 @@ export class FamiliesListPage implements OnInit {
   isLoading = this.store.isLoading;
   error = this.store.error;
 
+  protected searchQuery = signal('');
+  protected showIncompleteOnly = signal(false);
+
   familiesWithStatus = computed(() => {
     return this.families().map((family) => ({
       family,
@@ -30,8 +33,56 @@ export class FamiliesListPage implements OnInit {
     }));
   });
 
+  protected filteredFamilies = computed(() => {
+    let result = this.familiesWithStatus();
+
+    const query = this.searchQuery().toLowerCase().trim();
+    if (query) {
+      result = result.filter((item) => this.matchesSearch(item.family, query));
+    }
+
+    if (this.showIncompleteOnly()) {
+      result = result.filter((item) => item.status.status === 'incomplet');
+    }
+
+    return result;
+  });
+
   ngOnInit(): void {
     this.store.loadFamilies();
+  }
+
+  protected onSearchInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.searchQuery.set(input.value);
+  }
+
+  protected toggleIncompleteFilter(): void {
+    this.showIncompleteOnly.update((value) => !value);
+  }
+
+  private matchesSearch(family: Family, query: string): boolean {
+    if (family.guardianNames.some((name) => name.toLowerCase().includes(query))) {
+      return true;
+    }
+
+    if (
+      family.children?.some(
+        (child) => child.firstName.toLowerCase().includes(query) || child.lastName.toLowerCase().includes(query),
+      )
+    ) {
+      return true;
+    }
+
+    if (family.phoneNumber?.toLowerCase().includes(query)) {
+      return true;
+    }
+
+    if (family.email?.toLowerCase().includes(query)) {
+      return true;
+    }
+
+    return false;
   }
 
   private deriveFamilyStatus(family: Family): FamilyRowStatus {
