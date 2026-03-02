@@ -1,0 +1,228 @@
+<div class="family-create-container">
+  <header class="page-header">
+    <h1>Créer une nouvelle famille</h1>
+  </header>
+
+  @if (error()) {
+  <div class="error-state">
+    <p>{{ error() }}</p>
+  </div>
+  }
+
+  <form [formGroup]="familyForm" (ngSubmit)="onSubmit()" class="family-form">
+    <section class="form-section">
+      <h2>Informations de la famille</h2>
+
+      <div class="form-field">
+        <label for="familyName">Nom de famille *</label>
+        <input id="familyName" type="text" formControlName="familyName" placeholder="Ex: Famille Dupont" />
+        @if (familyForm.get('familyName')?.invalid && familyForm.get('familyName')?.touched) {
+        <span class="error-message">Le nom de famille est requis</span>
+        }
+      </div>
+
+      <div class="form-field">
+        <label for="guardianNames">Responsables légaux * (séparés par des virgules)</label>
+        <input
+          id="guardianNames"
+          type="text"
+          formControlName="guardianNames"
+          placeholder="Ex: Marie Dupont, Jean Dupont"
+        />
+        @if (familyForm.get('guardianNames')?.invalid && familyForm.get('guardianNames')?.touched) {
+        <span class="error-message">Au moins un responsable est requis</span>
+        }
+      </div>
+
+      <div class="form-field">
+        <label for="address">Adresse *</label>
+        <input id="address" type="text" formControlName="address" placeholder="Ex: 12 Rue de la Paix, 75001 Paris" />
+        @if (familyForm.get('address')?.invalid && familyForm.get('address')?.touched) {
+        <span class="error-message">L'adresse est requise</span>
+        }
+      </div>
+
+      <div class="form-field">
+        <label for="phoneNumber">Téléphone *</label>
+        <input id="phoneNumber" type="tel" formControlName="phoneNumber" placeholder="Ex: +33 1 23 45 67 89" />
+        @if (familyForm.get('phoneNumber')?.invalid && familyForm.get('phoneNumber')?.touched) {
+        <span class="error-message">Le téléphone est requis</span>
+        }
+      </div>
+
+      <div class="form-field">
+        <label for="email">Email *</label>
+        <input id="email" type="email" formControlName="email" placeholder="Ex: famille@example.fr" />
+        @if (familyForm.get('email')?.invalid && familyForm.get('email')?.touched) {
+        <span class="error-message">Un email valide est requis</span>
+        }
+      </div>
+    </section>
+
+    <section class="form-section">
+      <div class="section-header">
+        <h2>Enfants (au moins 1 requis)</h2>
+        <button type="button" class="add-child-button" (click)="addChild()">+ Ajouter un enfant</button>
+      </div>
+
+      <div formArrayName="children" class="children-list">
+        @for (child of children.controls; track $index) {
+        <div [formGroupName]="$index" class="child-form-group">
+          <div class="child-form-header">
+            <h3>Enfant {{ $index + 1 }}</h3>
+            @if (children.length > 1) {
+            <button type="button" class="remove-button" (click)="removeChild($index)">Supprimer</button>
+            }
+          </div>
+
+          <div class="child-form-fields">
+            <div class="form-field">
+              <label [for]="'firstName-' + $index">Prénom *</label>
+              <input [id]="'firstName-' + $index" type="text" formControlName="firstName" placeholder="Prénom" />
+              @if (child.get('firstName')?.invalid && child.get('firstName')?.touched) {
+              <span class="error-message">Le prénom est requis</span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label [for]="'lastName-' + $index">Nom *</label>
+              <input [id]="'lastName-' + $index" type="text" formControlName="lastName" placeholder="Nom" />
+              @if (child.get('lastName')?.invalid && child.get('lastName')?.touched) {
+              <span class="error-message">Le nom est requis</span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label [for]="'birthDate-' + $index">Date de naissance *</label>
+              <input [id]="'birthDate-' + $index" type="date" formControlName="birthDate" />
+              @if (child.get('birthDate')?.invalid && child.get('birthDate')?.touched) {
+              <span class="error-message">La date de naissance est requise</span>
+              }
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+    </section>
+
+    <section class="form-section">
+      <div class="section-header">
+        <h2>Parents (au moins 1 requis)</h2>
+        @if (parents.length < 2) {
+        <button type="button" class="add-child-button" (click)="addParent()">+ Ajouter Parent 2</button>
+        }
+      </div>
+
+      <div formArrayName="parents" class="parents-list">
+        @for (parent of parents.controls; track $index) {
+        <div [formGroupName]="$index" class="parent-form-group">
+          <h3>Parent {{ $index + 1 }}</h3>
+
+          <div class="parent-basic-fields">
+            <div class="form-field">
+              <label [for]="'parentFirstName-' + $index">Prénom *</label>
+              <input [id]="'parentFirstName-' + $index" type="text" formControlName="firstName" placeholder="Prénom" />
+              @if (parent.get('firstName')?.invalid && parent.get('firstName')?.touched) {
+              <span class="error-message">Le prénom est requis</span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label [for]="'parentLastName-' + $index">Nom *</label>
+              <input [id]="'parentLastName-' + $index" type="text" formControlName="lastName" placeholder="Nom" />
+              @if (parent.get('lastName')?.invalid && parent.get('lastName')?.touched) {
+              <span class="error-message">Le nom est requis</span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label [for]="'parentEmail-' + $index">Email</label>
+              <input [id]="'parentEmail-' + $index" type="email" formControlName="email" placeholder="Email" />
+            </div>
+
+            <div class="form-field">
+              <label [for]="'parentPhone-' + $index">Téléphone</label>
+              <input [id]="'parentPhone-' + $index" type="tel" formControlName="phoneNumber" placeholder="Téléphone" />
+            </div>
+          </div>
+
+          <div class="parent-subsections">
+            <div formGroupName="personalSituation" class="subsection">
+              <h4>Situation personnelle (optionnel)</h4>
+              <div class="form-field">
+                <label [for]="'maritalStatus-' + $index">Statut marital</label>
+                <input
+                  [id]="'maritalStatus-' + $index"
+                  type="text"
+                  formControlName="maritalStatus"
+                  placeholder="Ex: Marié(e)"
+                />
+              </div>
+              <div class="form-field">
+                <label [for]="'occupation-' + $index">Profession</label>
+                <input
+                  [id]="'occupation-' + $index"
+                  type="text"
+                  formControlName="occupation"
+                  placeholder="Ex: Ingénieur"
+                />
+              </div>
+              <div class="form-field">
+                <label [for]="'employer-' + $index">Employeur</label>
+                <input [id]="'employer-' + $index" type="text" formControlName="employer" placeholder="Ex: TechCorp" />
+              </div>
+              <div class="form-field">
+                <label [for]="'psNotes-' + $index">Notes</label>
+                <textarea
+                  [id]="'psNotes-' + $index"
+                  formControlName="notes"
+                  rows="2"
+                  placeholder="Notes additionnelles"
+                ></textarea>
+              </div>
+            </div>
+
+            <div formGroupName="financialInformation" class="subsection">
+              <h4>Informations financières (optionnel)</h4>
+              <div class="form-field">
+                <label [for]="'monthlyIncome-' + $index">Revenu mensuel (€)</label>
+                <input
+                  [id]="'monthlyIncome-' + $index"
+                  type="number"
+                  formControlName="monthlyIncome"
+                  placeholder="Ex: 3500"
+                />
+              </div>
+              <div class="form-field">
+                <label [for]="'employmentType-' + $index">Type d'emploi</label>
+                <input
+                  [id]="'employmentType-' + $index"
+                  type="text"
+                  formControlName="employmentType"
+                  placeholder="Ex: CDI temps plein"
+                />
+              </div>
+              <div class="form-field">
+                <label [for]="'fiNotes-' + $index">Notes</label>
+                <textarea
+                  [id]="'fiNotes-' + $index"
+                  formControlName="notes"
+                  rows="2"
+                  placeholder="Notes additionnelles"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+    </section>
+
+    <div class="form-actions">
+      <button type="button" class="cancel-button" (click)="cancel()">Annuler</button>
+      <button type="submit" class="submit-button" [disabled]="isLoading()">
+        {{ isLoading() ? 'Création en cours...' : 'Créer la famille' }}
+      </button>
+    </div>
+  </form>
+</div>

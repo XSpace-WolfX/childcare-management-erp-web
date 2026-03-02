@@ -1,0 +1,110 @@
+<div class="health-container">
+  <header class="page-header">
+    <h1>Santé des dossiers</h1>
+    <p class="subtitle">Vue de supervision pour détecter les anomalies dans les dossiers enfants</p>
+  </header>
+
+  @if (store.isLoading()) {
+  <div class="loading">Chargement des données...</div>
+  } @else {
+  <div class="health-content">
+    <section class="summary-section">
+      <h2>Résumé</h2>
+      <div class="summary-cards">
+        <div class="summary-card total">
+          <div class="card-value">{{ store.summary().totalChildren }}</div>
+          <div class="card-label">Enfants au total</div>
+        </div>
+        <div class="summary-card incomplete">
+          <div class="card-value">{{ store.summary().incompleteCount }}</div>
+          <div class="card-label">Dossiers incomplets</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="filters-section">
+      <h2>Filtres</h2>
+      <div class="filters">
+        <label class="filter-checkbox">
+          <input
+            type="checkbox"
+            [checked]="store.isFilterActive('incomplete')"
+            (change)="store.toggleFilter('incomplete')"
+          />
+          <span>Dossier incomplet</span>
+        </label>
+        <label class="filter-checkbox">
+          <input
+            type="checkbox"
+            [checked]="store.isFilterActive('missingAuthorization')"
+            (change)="store.toggleFilter('missingAuthorization')"
+          />
+          <span>Autorisation manquante</span>
+        </label>
+        <label class="filter-checkbox">
+          <input
+            type="checkbox"
+            [checked]="store.isFilterActive('missingContact')"
+            (change)="store.toggleFilter('missingContact')"
+          />
+          <span>Contact manquant</span>
+        </label>
+      </div>
+    </section>
+
+    <section class="children-section">
+      <h2>Liste des enfants ({{ store.filteredChildren().length }})</h2>
+      @if (store.filteredChildren().length === 0) {
+      <p class="no-data">Aucun enfant ne correspond aux filtres sélectionnés.</p>
+      } @else {
+      <div class="children-table">
+        <div class="table-header">
+          <div class="col-name">Nom</div>
+          <div class="col-group">Groupe</div>
+          <div class="col-flags">Anomalies</div>
+          <div class="col-status">Statut</div>
+        </div>
+        <div class="table-body">
+          @for (child of store.filteredChildren(); track child.id) {
+          <div
+            class="table-row"
+            (click)="navigateToChild(child.id)"
+            (keyup.enter)="navigateToChild(child.id)"
+            (keyup.space)="navigateToChild(child.id)"
+            tabindex="0"
+            role="button"
+          >
+            <div class="col-name">{{ child.name }}</div>
+            <div class="col-group">{{ child.group || '-' }}</div>
+            <div class="col-flags">
+              <div class="flags">
+                @if (child.healthFlags.missingFamilyLink) {
+                <span class="flag flag-family" title="Lien famille manquant">Famille</span>
+                }
+                @if (child.healthFlags.missingAuthorizedPerson) {
+                <span class="flag flag-authorization" title="Autorisation manquante">Autorisation</span>
+                }
+                @if (child.healthFlags.missingContactInfo) {
+                <span class="flag flag-contact" title="Contact manquant">Contact</span>
+                }
+                @if (!child.healthFlags.missingFamilyLink && !child.healthFlags.missingAuthorizedPerson &&
+                !child.healthFlags.missingContactInfo) {
+                <span class="flag-none">-</span>
+                }
+              </div>
+            </div>
+            <div class="col-status">
+              <span class="status-badge" [class.status-ok]="store.getChildStatus(child) === 'OK'"
+                [class.status-incomplete]="store.getChildStatus(child) === 'Incomplet'">
+                {{ store.getChildStatus(child) }}
+              </span>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+      }
+    </section>
+  </div>
+  }
+</div>

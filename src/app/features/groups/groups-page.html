@@ -1,0 +1,48 @@
+<div class="groups-container">
+  <header class="page-header">
+    <div class="header-content">
+      <h1>Enfants par groupe</h1>
+      <button type="button" class="back-btn" (click)="navigateToToday()">
+        ← Retour au tableau de bord
+      </button>
+    </div>
+    <p class="subtitle">Vue organisationnelle des enfants regroupés par classe</p>
+  </header>
+
+  @if (store.isLoading()) {
+  <div class="loading">Chargement des données...</div>
+  } @else {
+  <div class="groups-content">
+    <section class="summary-section">
+      <div class="total-count">
+        <strong>{{ store.totalChildren() }}</strong> enfant{{ store.totalChildren() > 1 ? 's' : '' }} au total
+      </div>
+    </section>
+
+    @if (store.groupedChildren().length === 0) {
+    <p class="no-data">Aucun enfant trouvé.</p>
+    } @else { @for (group of store.groupedChildren(); track group.groupName) {
+    <section class="group-section">
+      <h2 class="group-header">
+        {{ group.groupName }}
+        <span class="group-count">({{ group.count }})</span>
+      </h2>
+      <div class="children-list">
+        @for (child of group.children; track child.id) {
+        <div
+          class="child-item"
+          (click)="navigateToChild(child.id)"
+          (keyup.enter)="navigateToChild(child.id)"
+          (keyup.space)="navigateToChild(child.id)"
+          tabindex="0"
+          role="button"
+        >
+          <div class="child-name">{{ child.lastName }} {{ child.firstName }}</div>
+        </div>
+        }
+      </div>
+    </section>
+    } }
+  </div>
+  }
+</div>

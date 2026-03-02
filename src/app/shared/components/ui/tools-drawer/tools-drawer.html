@@ -1,0 +1,25 @@
+@if (isOpen()) {
+<div
+  class="drawer-backdrop"
+  (click)="onBackdropClick()"
+  (keydown)="onKeyDown($event)"
+  (keyup.escape)="closeDrawer.emit()"
+  tabindex="0"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Menu Outils"
+>
+  <div class="drawer-panel" (click)="onDrawerClick($event)">
+    <div class="drawer-header">
+      <h2>Outils</h2>
+      <button type="button" class="close-btn" (click)="closeDrawer.emit()" aria-label="Fermer">×</button>
+    </div>
+    <nav class="drawer-nav">
+      <button type="button" class="nav-item" (click)="navigateTo('/today')">Aujourd'hui</button>
+      <button type="button" class="nav-item" (click)="navigateTo('/health')">Dossiers</button>
+      <button type="button" class="nav-item" (click)="navigateTo('/families')">Familles (admin)</button>
+      <button type="button" class="nav-item" (click)="navigateTo('/groups')">Enfants par groupe</button>
+    </nav>
+  </div>
+</div>
+}
