@@ -1,6 +1,6 @@
-import { Family } from '../models/family-model';
-import { Child } from '../models/child-model';
-import { AuthorizedPerson, AuthorizedPersonChildLink } from '../models/authorized-person-model';
+import { Family } from '../models/family';
+import { Child } from '../models/child';
+import { AuthorizedPerson, AuthorizedPersonChildLink } from '../models/authorized-person';
 
 export interface ChildcareMockDatabase {
   families: Family[];
