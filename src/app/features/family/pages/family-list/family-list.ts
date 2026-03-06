@@ -98,12 +98,12 @@ export class FamiliesListPage implements OnInit {
 
   navigateToChild(childId: string, event: Event): void {
     event.stopPropagation();
-    this.router.navigate(['/children', childId]);
+    this.router.navigate(['/families/children', childId]);
   }
 
   navigateToFirstChild(family: Family): void {
     if (family.children && family.children.length > 0) {
-      this.router.navigate(['/children', family.children[0].id]);
+      this.router.navigate(['/families/children', family.children[0].id]);
     }
   }
 

@@ -160,7 +160,7 @@ export class FamilyDetailPage implements OnInit, AfterViewInit {
   }
 
   navigateToChild(childId: string): void {
-    this.router.navigate(['/children', childId]);
+    this.router.navigate(['/families/children', childId]);
   }
 
   goBack(): void {
