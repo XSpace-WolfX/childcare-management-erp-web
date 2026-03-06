@@ -20,11 +20,10 @@ export const familyRoutes: Routes = [
         path: ':familyId',
         loadComponent: () => import('./pages/family-detail/family-detail').then((m) => m.FamilyDetailPage),
       },
+      {
+        path: 'children/:childId',
+        loadComponent: () => import('./pages/family-detail/family-detail').then((m) => m.FamilyDetailPage),
+      },
     ],
-  },
-  {
-    path: 'children/:childId',
-    providers: [FamiliesStore, { provide: FAMILIES_API, useClass: MockFamiliesApi }],
-    loadComponent: () => import('./pages/family-detail/family-detail').then((m) => m.FamilyDetailPage),
   },
 ];
