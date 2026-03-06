@@ -1,0 +1,2 @@
+# Feature-specific presentational components go here
+# These should be dumb components with @Input/@Output, no store/api calls
