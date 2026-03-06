@@ -1,11 +1,11 @@
 import { Routes } from '@angular/router';
-import { HealthStore } from './health-store';
-import { MockHealthApi } from './services/mock-health.api';
+import { HealthStore } from './data-access/health-store';
+import { MockHealthApi } from './data-access/mock-health-api';
 
 export const healthRoutes: Routes = [
   {
     path: '',
     providers: [HealthStore, MockHealthApi],
-    loadComponent: () => import('./health-page').then((m) => m.HealthPage),
+    loadComponent: () => import('./pages/health').then((m) => m.HealthPage),
   },
 ];

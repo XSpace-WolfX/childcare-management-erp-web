@@ -1,6 +1,4 @@
 import { Routes } from '@angular/router';
-import { FamiliesStore } from './features/families/families-store';
-import { FAMILIES_API, MockFamiliesApi } from './core';
 
 export const routes: Routes = [
   {
@@ -13,30 +11,7 @@ export const routes: Routes = [
       },
       {
         path: 'families',
-        providers: [FamiliesStore, { provide: FAMILIES_API, useClass: MockFamiliesApi }],
-        children: [
-          {
-            path: '',
-            loadComponent: () =>
-              import('./features/families/pages/families-list/families-list-page').then((m) => m.FamiliesListPage),
-          },
-          {
-            path: 'new',
-            loadComponent: () =>
-              import('./features/families/pages/family-create/family-create-page').then((m) => m.FamilyCreatePage),
-          },
-          {
-            path: ':familyId',
-            loadComponent: () =>
-              import('./features/families/pages/family-detail/family-detail-page').then((m) => m.FamilyDetailPage),
-          },
-        ],
-      },
-      {
-        path: 'children/:childId',
-        providers: [FamiliesStore, { provide: FAMILIES_API, useClass: MockFamiliesApi }],
-        loadComponent: () =>
-          import('./features/families/pages/family-detail/family-detail-page').then((m) => m.FamilyDetailPage),
+        loadChildren: () => import('./features/family/family.routes').then((m) => m.familyRoutes),
       },
       {
         path: 'health',
@@ -44,7 +19,7 @@ export const routes: Routes = [
       },
       {
         path: 'groups',
-        loadChildren: () => import('./features/groups/groups.routes').then((m) => m.groupsRoutes),
+        loadChildren: () => import('./features/child-group/child-group.routes').then((m) => m.childGroupRoutes),
       },
       { path: '', pathMatch: 'full', redirectTo: 'today' },
     ],
