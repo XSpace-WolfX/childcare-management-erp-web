@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { ToolsDrawerComponent } from '../../ui/tools-drawer/tools-drawer';
+import { ToolsDrawerComponent } from '../../shared/components/tools-drawer/tools-drawer';
 
 @Component({
   selector: 'ccm-app-shell',

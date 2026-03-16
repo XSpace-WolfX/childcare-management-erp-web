@@ -3,7 +3,7 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./shared/components/layouts/app-shell/app-shell').then((m) => m.AppShellComponent),
+    loadComponent: () => import('./layout/app-shell/app-shell').then((m) => m.AppShellComponent),
     children: [
       {
         path: 'today',
@@ -19,13 +19,14 @@ export const routes: Routes = [
       },
       {
         path: 'groups',
-        loadChildren: () => import('./features/child-group/child-group.routes').then((m) => m.childGroupRoutes),
+        loadChildren: () =>
+          import('./features/child-group/child-group.routes').then((m) => m.childGroupRoutes),
       },
       { path: '', pathMatch: 'full', redirectTo: 'today' },
     ],
   },
   {
     path: '**',
-    loadComponent: () => import('./shared/pages/not-found/not-found').then((m) => m.NotFound),
+    loadComponent: () => import('./layout/pages/not-found/not-found').then((m) => m.NotFound),
   },
 ];
