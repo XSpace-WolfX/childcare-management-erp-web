@@ -1,13 +1,13 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ChildGroupStore } from '../data-access/child-group-store';
 
 @Component({
   selector: 'ccm-groups',
-  standalone: true,
   imports: [],
   templateUrl: './child-group.html',
   styleUrls: ['./child-group.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GroupsPage {
   protected readonly store = inject(ChildGroupStore);

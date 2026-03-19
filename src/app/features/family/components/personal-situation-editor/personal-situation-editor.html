@@ -1,0 +1,54 @@
+<div class="subsection">
+  <div class="subsection-header">
+    <h5>Situation personnelle</h5>
+    @if (!isEditing()) {
+      <button type="button" class="edit-subsection-button" (click)="enterEditMode()">
+        {{ personalSituation() ? 'Modifier' : 'Ajouter' }}
+      </button>
+    }
+  </div>
+
+  @if (isEditing()) {
+    <form [formGroup]="personalSituationForm" (ngSubmit)="onSave()" class="subsection-edit-form">
+      <div class="form-field">
+        <label for="maritalStatus">Statut marital</label>
+        <input type="text" id="maritalStatus" formControlName="maritalStatus" />
+      </div>
+      <div class="form-field">
+        <label for="occupation">Profession</label>
+        <input type="text" id="occupation" formControlName="occupation" />
+      </div>
+      <div class="form-field">
+        <label for="employer">Employeur</label>
+        <input type="text" id="employer" formControlName="employer" />
+      </div>
+      <div class="form-field">
+        <label for="psNotes">Notes</label>
+        <textarea id="psNotes" formControlName="notes" rows="3"></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="save-button">Enregistrer</button>
+        <button type="button" class="cancel-button" (click)="cancelEdit()">Annuler</button>
+      </div>
+    </form>
+  } @else {
+    @if (personalSituation()) {
+      <div class="subsection-content">
+        @if (personalSituation()!.maritalStatus) {
+          <p><strong>Statut marital:</strong> {{ personalSituation()!.maritalStatus }}</p>
+        }
+        @if (personalSituation()!.occupation) {
+          <p><strong>Profession:</strong> {{ personalSituation()!.occupation }}</p>
+        }
+        @if (personalSituation()!.employer) {
+          <p><strong>Employeur:</strong> {{ personalSituation()!.employer }}</p>
+        }
+        @if (personalSituation()!.notes) {
+          <p><strong>Notes:</strong> {{ personalSituation()!.notes }}</p>
+        }
+      </div>
+    } @else {
+      <p class="not-provided">Non renseignée</p>
+    }
+  }
+</div>

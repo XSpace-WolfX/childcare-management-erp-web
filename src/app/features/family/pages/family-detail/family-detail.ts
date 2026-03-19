@@ -1,21 +1,41 @@
-import { Component, inject, OnInit, AfterViewInit, signal, effect } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnInit,
+  AfterViewInit,
+  signal,
+  effect,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { FamiliesStore } from '../../data-access/family-store';
-import { CreateAuthorizedPersonCommand, AuthorizedPerson } from '../../../../core/models/authorized-person';
+import {
+  CreateAuthorizedPersonCommand,
+  AuthorizedPerson,
+} from '../../../../core/models/authorized-person';
 import { UpdateFamilyCommand, Family } from '../../../../core/models/family';
 import { UpdateChildCommand, Child } from '../../../../core/models/child';
 import { UpsertPersonalSituationCommand } from '../../../../core/models/personal-situation';
 import { UpsertFinancialInformationCommand } from '../../../../core/models/financial-information';
+import { ChildrenListComponent } from '../../components/children-list/children-list';
+import { AuthorizedPersonFormComponent } from '../../components/authorized-person-form/authorized-person-form';
+import { PersonalSituationEditorComponent } from '../../components/personal-situation-editor/personal-situation-editor';
+import { FinancialInformationEditorComponent } from '../../components/financial-information-editor/financial-information-editor';
 
 @Component({
   selector: 'ccm-family-detail',
-  standalone: true,
-  imports: [DatePipe, ReactiveFormsModule],
+  imports: [
+    ReactiveFormsModule,
+    ChildrenListComponent,
+    AuthorizedPersonFormComponent,
+    PersonalSituationEditorComponent,
+    FinancialInformationEditorComponent,
+  ],
   templateUrl: './family-detail.html',
   styleUrls: ['./family-detail.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FamilyDetailPage implements OnInit, AfterViewInit {
   private store = inject(FamiliesStore);
@@ -35,23 +55,12 @@ export class FamilyDetailPage implements OnInit, AfterViewInit {
   isEditMode = signal(false);
   selectedChildId = signal<string | null>(null);
   familyEditForm!: FormGroup;
-  authorizedPersonForm: FormGroup;
-  selectedChildIds = signal<string[]>([]);
   successMessage = signal<string | null>(null);
-
-  editingPersonalSituation = signal<string | null>(null);
-  editingFinancialInformation = signal<string | null>(null);
-  personalSituationForm!: FormGroup;
-  financialInformationForm!: FormGroup;
+  formResetTrigger = signal(0);
+  personalSituationSaveSuccessTrigger = signal(0);
+  financialInformationSaveSuccessTrigger = signal(0);
 
   constructor() {
-    this.authorizedPersonForm = this.fb.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
-      phone: [''],
-      email: [''],
-    });
-
     effect(() => {
       const currentFamily = this.family();
       if (currentFamily?.children) {
@@ -92,7 +101,9 @@ export class FamilyDetailPage implements OnInit, AfterViewInit {
       address: [family.address, Validators.required],
       phoneNumber: [family.phoneNumber, Validators.required],
       email: [family.email, [Validators.required, Validators.email]],
-      children: this.fb.array(family.children?.map((child: Child) => this.createChildFormGroup(child)) || []),
+      children: this.fb.array(
+        family.children?.map((child: Child) => this.createChildFormGroup(child)) || [],
+      ),
     });
   }
 
@@ -155,10 +166,6 @@ export class FamilyDetailPage implements OnInit, AfterViewInit {
     }
   }
 
-  isChildSelected(childId: string): boolean {
-    return this.selectedChildId() === childId;
-  }
-
   navigateToChild(childId: string): void {
     this.router.navigate(['/families/children', childId]);
   }
@@ -169,21 +176,6 @@ export class FamilyDetailPage implements OnInit, AfterViewInit {
 
   navigateToDashboard(): void {
     this.router.navigate(['/today']);
-  }
-
-  toggleChildSelection(childId: string): void {
-    const selected = this.selectedChildIds();
-    const index = selected.indexOf(childId);
-    if (index > -1) {
-      selected.splice(index, 1);
-    } else {
-      selected.push(childId);
-    }
-    this.selectedChildIds.set([...selected]);
-  }
-
-  isChildSelectedForAuthorization(childId: string): boolean {
-    return this.selectedChildIds().includes(childId);
   }
 
   getAuthorizedPersonsForChild(childId: string): AuthorizedPerson[] {
@@ -260,30 +252,12 @@ export class FamilyDetailPage implements OnInit, AfterViewInit {
     });
   }
 
-  submitAuthorizedPerson(): void {
-    if (this.authorizedPersonForm.invalid) {
-      return;
-    }
-
-    if (this.selectedChildIds().length === 0) {
-      return;
-    }
-
-    const formValue = this.authorizedPersonForm.value;
-    const command: CreateAuthorizedPersonCommand = {
-      firstName: formValue.firstName.trim(),
-      lastName: formValue.lastName.trim(),
-      phone: formValue.phone?.trim() || undefined,
-      email: formValue.email?.trim() || undefined,
-      childIds: this.selectedChildIds(),
-    };
-
+  handleAuthorizedPersonSubmit(command: CreateAuthorizedPersonCommand): void {
     this.store.createAuthorizedPerson(command).subscribe({
       next: () => {
         this.successMessage.set('Personne autorisée ajoutée avec succès');
-        this.authorizedPersonForm.reset();
-        this.selectedChildIds.set([]);
         this.loadAuthorizedPersons();
+        this.formResetTrigger.update((v) => v + 1);
         setTimeout(() => this.successMessage.set(null), 3000);
       },
       error: () => {
@@ -292,45 +266,14 @@ export class FamilyDetailPage implements OnInit, AfterViewInit {
     });
   }
 
-  enterEditPersonalSituation(parentId: string): void {
-    const currentFamily = this.family();
-    if (!currentFamily?.parents) return;
-
-    const parent = currentFamily.parents.find((p) => p.id === parentId);
-    if (!parent) return;
-
-    this.personalSituationForm = this.fb.group({
-      maritalStatus: [parent.personalSituation?.maritalStatus || ''],
-      occupation: [parent.personalSituation?.occupation || ''],
-      employer: [parent.personalSituation?.employer || ''],
-      notes: [parent.personalSituation?.notes || ''],
-    });
-
-    this.editingPersonalSituation.set(parentId);
-  }
-
-  cancelEditPersonalSituation(): void {
-    this.editingPersonalSituation.set(null);
-  }
-
-  savePersonalSituation(parentId: string): void {
-    if (this.personalSituationForm.invalid) {
-      return;
-    }
-
-    const formValue = this.personalSituationForm.value;
-    const command: UpsertPersonalSituationCommand = {
-      parentId,
-      maritalStatus: formValue.maritalStatus?.trim() || undefined,
-      occupation: formValue.occupation?.trim() || undefined,
-      employer: formValue.employer?.trim() || undefined,
-      notes: formValue.notes?.trim() || undefined,
-    };
-
-    this.store.upsertPersonalSituation(command).subscribe({
+  handlePersonalSituationSave(event: {
+    parentId: string;
+    command: UpsertPersonalSituationCommand;
+  }): void {
+    this.store.upsertPersonalSituation(event.command).subscribe({
       next: () => {
-        this.editingPersonalSituation.set(null);
         this.successMessage.set('Situation personnelle mise à jour avec succès');
+        this.personalSituationSaveSuccessTrigger.update((v) => v + 1);
         setTimeout(() => this.successMessage.set(null), 3000);
       },
       error: () => {
@@ -339,43 +282,14 @@ export class FamilyDetailPage implements OnInit, AfterViewInit {
     });
   }
 
-  enterEditFinancialInformation(parentId: string): void {
-    const currentFamily = this.family();
-    if (!currentFamily?.parents) return;
-
-    const parent = currentFamily.parents.find((p) => p.id === parentId);
-    if (!parent) return;
-
-    this.financialInformationForm = this.fb.group({
-      monthlyIncome: [parent.financialInformation?.monthlyIncome || null],
-      employmentType: [parent.financialInformation?.employmentType || ''],
-      notes: [parent.financialInformation?.notes || ''],
-    });
-
-    this.editingFinancialInformation.set(parentId);
-  }
-
-  cancelEditFinancialInformation(): void {
-    this.editingFinancialInformation.set(null);
-  }
-
-  saveFinancialInformation(parentId: string): void {
-    if (this.financialInformationForm.invalid) {
-      return;
-    }
-
-    const formValue = this.financialInformationForm.value;
-    const command: UpsertFinancialInformationCommand = {
-      parentId,
-      monthlyIncome: formValue.monthlyIncome || undefined,
-      employmentType: formValue.employmentType?.trim() || undefined,
-      notes: formValue.notes?.trim() || undefined,
-    };
-
-    this.store.upsertFinancialInformation(command).subscribe({
+  handleFinancialInformationSave(event: {
+    parentId: string;
+    command: UpsertFinancialInformationCommand;
+  }): void {
+    this.store.upsertFinancialInformation(event.command).subscribe({
       next: () => {
-        this.editingFinancialInformation.set(null);
         this.successMessage.set('Informations financières mises à jour avec succès');
+        this.financialInformationSaveSuccessTrigger.update((v) => v + 1);
         setTimeout(() => this.successMessage.set(null), 3000);
       },
       error: () => {

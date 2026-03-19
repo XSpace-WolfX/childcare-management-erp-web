@@ -2,21 +2,22 @@
   <div
     class="drawer-backdrop"
     (click)="onBackdropClick()"
-    (keydown)="onKeyDown($event)"
-    (keyup.escape)="closeDrawer.emit()"
-    tabindex="0"
-    role="dialog"
-    aria-modal="true"
-    aria-label="Menu Outils"
+    (keydown.enter)="onBackdropClick()"
+    tabindex="-1"
   >
     <div
+      #drawerPanel
       class="drawer-panel"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="drawer-title"
+      tabindex="-1"
       (click)="onDrawerClick($event)"
-      (keydown)="onDrawerClick($event)"
-      tabindex="0"
+      (keydown)="onDrawerKeyDown($event)"
+      (keyup.escape)="closeDrawer.emit()"
     >
       <div class="drawer-header">
-        <h2>Outils</h2>
+        <h2 id="drawer-title">Outils</h2>
         <button type="button" class="close-btn" (click)="closeDrawer.emit()" aria-label="Fermer">
           ×
         </button>

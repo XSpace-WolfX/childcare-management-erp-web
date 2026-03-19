@@ -143,6 +143,9 @@ section h2 {
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s;
+  width: 100%;
+  text-align: left;
+  font: inherit;
 }
 
 .table-row:hover {

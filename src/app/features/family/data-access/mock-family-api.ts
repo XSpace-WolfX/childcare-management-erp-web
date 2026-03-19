@@ -23,7 +23,7 @@ import {
   addAuthorizedPersonChildLink,
 } from '../../../core/mock/childcare-mock-db';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class MockFamiliesApi implements FamiliesApi {
   private get families(): Family[] {
     return getAllFamilies();

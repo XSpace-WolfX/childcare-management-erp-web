@@ -3,7 +3,7 @@ import { Observable, of, delay } from 'rxjs';
 import { ChildAttendanceView } from '../../../core/models/attendance-view';
 import { getAllChildren } from '../../../core/mock/childcare-mock-db';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class MockAttendanceApi {
   getAttendanceForToday(): Observable<ChildAttendanceView[]> {
     const allChildren = getAllChildren();

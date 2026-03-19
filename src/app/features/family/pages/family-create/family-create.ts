@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { ReactiveFormsModule, FormGroup, FormArray, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FamiliesStore } from '../../data-access/family-store';
@@ -45,9 +45,9 @@ interface FamilyFormModel {
 
 @Component({
   selector: 'ccm-family-create',
-  standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './family-create.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FamilyCreatePage implements OnInit {
   private store = inject(FamiliesStore);
@@ -96,7 +96,10 @@ export class FamilyCreatePage implements OnInit {
       guardianNames: new FormControl('', { nonNullable: false, validators: [Validators.required] }),
       address: new FormControl('', { nonNullable: false, validators: [Validators.required] }),
       phoneNumber: new FormControl('', { nonNullable: false, validators: [Validators.required] }),
-      email: new FormControl('', { nonNullable: false, validators: [Validators.required, Validators.email] }),
+      email: new FormControl('', {
+        nonNullable: false,
+        validators: [Validators.required, Validators.email],
+      }),
       children: new FormArray<
         FormGroup<{
           firstName: FormControl<string | null>;

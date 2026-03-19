@@ -1,13 +1,13 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ToolsDrawerComponent } from '../../shared/components/tools-drawer/tools-drawer';
 
 @Component({
   selector: 'ccm-app-shell',
-  standalone: true,
   imports: [RouterOutlet, ToolsDrawerComponent],
   templateUrl: './app-shell.html',
   styleUrls: ['./app-shell.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppShellComponent {
   protected readonly isDrawerOpen = signal(false);
