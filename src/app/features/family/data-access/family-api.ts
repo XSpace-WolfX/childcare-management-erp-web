@@ -1,4 +1,4 @@
-import { InjectionToken } from '@angular/core';
+import { inject, InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Family, CreateFamilyCommand, UpdateFamilyCommand } from '../../../core/models/family';
 import {
@@ -9,6 +9,7 @@ import {
 import { UpsertPersonalSituationCommand } from '../../../core/models/personal-situation';
 import { UpsertFinancialInformationCommand } from '../../../core/models/financial-information';
 import { Parent } from '../../../core/models/parent';
+import { MockFamiliesApi } from './mock-family-api';
 
 export interface FamiliesApi {
   getFamilies(): Observable<Family[]>;
@@ -24,4 +25,7 @@ export interface FamiliesApi {
   upsertFinancialInformation(command: UpsertFinancialInformationCommand): Observable<Parent>;
 }
 
-export const FAMILIES_API = new InjectionToken<FamiliesApi>('FamiliesApi');
+export const FAMILIES_API = new InjectionToken<FamiliesApi>('FamiliesApi', {
+  providedIn: 'root',
+  factory: () => inject(MockFamiliesApi),
+});

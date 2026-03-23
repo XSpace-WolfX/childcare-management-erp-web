@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Observable } from 'rxjs';
+import { Observable, tap, catchError, throwError, finalize } from 'rxjs';
 import { Family, CreateFamilyCommand } from '../../../core/models/family';
 import { FAMILIES_API } from './family-api';
 import { UpdateFamilyCommand } from '../../../core/models/family';
@@ -85,62 +85,54 @@ export class FamiliesStore {
     this._isLoading.set(true);
     this._error.set(null);
 
-    const result = this.repository.createFamily(command);
-
-    result.subscribe({
-      next: () => {
-        this._isLoading.set(false);
-      },
-      error: (err) => {
+    return this.repository.createFamily(command).pipe(
+      catchError((err) => {
         this._error.set('Failed to create family');
-        this._isLoading.set(false);
         console.error('Error creating family:', err);
-      },
-    });
-
-    return result;
+        return throwError(() => err);
+      }),
+      finalize(() => {
+        this._isLoading.set(false);
+      }),
+    );
   }
 
   updateFamily(command: UpdateFamilyCommand): Observable<Family> {
     this._isLoading.set(true);
     this._error.set(null);
 
-    const result = this.repository.updateFamily(command);
-
-    result.subscribe({
-      next: (updatedFamily) => {
+    return this.repository.updateFamily(command).pipe(
+      tap((updatedFamily) => {
         this._selectedFamily.set(updatedFamily);
-        this._isLoading.set(false);
-      },
-      error: (err) => {
+      }),
+      catchError((err) => {
         this._error.set('Failed to update family');
-        this._isLoading.set(false);
         console.error('Error updating family:', err);
-      },
-    });
-
-    return result;
+        return throwError(() => err);
+      }),
+      finalize(() => {
+        this._isLoading.set(false);
+      }),
+    );
   }
 
   createAuthorizedPerson(command: CreateAuthorizedPersonCommand): Observable<AuthorizedPerson> {
     this._isLoading.set(true);
     this._error.set(null);
 
-    const result = this.repository.createAuthorizedPerson(command);
-
-    result.subscribe({
-      next: () => {
-        this._isLoading.set(false);
+    return this.repository.createAuthorizedPerson(command).pipe(
+      tap(() => {
         this.loadAuthorizedPersonChildLinks();
-      },
-      error: (err) => {
+      }),
+      catchError((err) => {
         this._error.set('Failed to create authorized person');
-        this._isLoading.set(false);
         console.error('Error creating authorized person:', err);
-      },
-    });
-
-    return result;
+        return throwError(() => err);
+      }),
+      finalize(() => {
+        this._isLoading.set(false);
+      }),
+    );
   }
 
   getAuthorizedPersonsByChildId(childId: string): Observable<AuthorizedPerson[]> {
@@ -162,61 +154,51 @@ export class FamiliesStore {
     this._isLoading.set(true);
     this._error.set(null);
 
-    const result = this.repository.removeAuthorizedPersonLink(authorizedPersonId, childId);
-
-    result.subscribe({
-      next: () => {
-        this._isLoading.set(false);
+    return this.repository.removeAuthorizedPersonLink(authorizedPersonId, childId).pipe(
+      tap(() => {
         this.loadAuthorizedPersonChildLinks();
-      },
-      error: (err) => {
+      }),
+      catchError((err) => {
         this._error.set('Failed to remove authorized person link');
-        this._isLoading.set(false);
         console.error('Error removing authorized person link:', err);
-      },
-    });
-
-    return result;
+        return throwError(() => err);
+      }),
+      finalize(() => {
+        this._isLoading.set(false);
+      }),
+    );
   }
 
   upsertPersonalSituation(command: UpsertPersonalSituationCommand): Observable<Parent> {
     this._isLoading.set(true);
     this._error.set(null);
 
-    const result = this.repository.upsertPersonalSituation(command);
-
-    result.subscribe({
-      next: () => {
-        this._isLoading.set(false);
-      },
-      error: (err) => {
+    return this.repository.upsertPersonalSituation(command).pipe(
+      catchError((err) => {
         this._error.set('Failed to update personal situation');
-        this._isLoading.set(false);
         console.error('Error updating personal situation:', err);
-      },
-    });
-
-    return result;
+        return throwError(() => err);
+      }),
+      finalize(() => {
+        this._isLoading.set(false);
+      }),
+    );
   }
 
   upsertFinancialInformation(command: UpsertFinancialInformationCommand): Observable<Parent> {
     this._isLoading.set(true);
     this._error.set(null);
 
-    const result = this.repository.upsertFinancialInformation(command);
-
-    result.subscribe({
-      next: () => {
-        this._isLoading.set(false);
-      },
-      error: (err) => {
+    return this.repository.upsertFinancialInformation(command).pipe(
+      catchError((err) => {
         this._error.set('Failed to update financial information');
-        this._isLoading.set(false);
         console.error('Error updating financial information:', err);
-      },
-    });
-
-    return result;
+        return throwError(() => err);
+      }),
+      finalize(() => {
+        this._isLoading.set(false);
+      }),
+    );
   }
 
   clearSelectedFamily(): void {

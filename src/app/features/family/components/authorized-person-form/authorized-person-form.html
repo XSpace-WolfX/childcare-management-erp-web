@@ -1,0 +1,51 @@
+<section class="authorized-persons-section">
+  <h3>Ajouter une personne autorisée</h3>
+
+  <form
+    class="authorized-person-form"
+    [formGroup]="authorizedPersonForm"
+    (ngSubmit)="onSubmit()"
+  >
+    <div class="form-row">
+      <div class="form-field">
+        <label for="firstName">Prénom *</label>
+        <input type="text" id="firstName" formControlName="firstName" required />
+      </div>
+
+      <div class="form-field">
+        <label for="lastName">Nom *</label>
+        <input type="text" id="lastName" formControlName="lastName" required />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-field">
+        <label for="phone">Téléphone</label>
+        <input type="tel" id="phone" formControlName="phone" />
+      </div>
+
+      <div class="form-field">
+        <label for="email">Email</label>
+        <input type="email" id="email" formControlName="email" />
+      </div>
+    </div>
+
+    <fieldset class="form-field">
+      <legend>Enfants liés *</legend>
+      <div class="children-checkboxes">
+        @for (child of children(); track child.id) {
+          <label class="checkbox-label">
+            <input
+              type="checkbox"
+              [checked]="isChildSelected(child.id)"
+              (change)="toggleChildSelection(child.id)"
+            />
+            {{ child.firstName }} {{ child.lastName }}
+          </label>
+        }
+      </div>
+    </fieldset>
+
+    <button type="submit" class="submit-button">Ajouter la personne autorisée</button>
+  </form>
+</section>

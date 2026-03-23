@@ -1,13 +1,13 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HealthStore } from '../data-access/health-store';
 
 @Component({
   selector: 'ccm-health',
-  standalone: true,
   imports: [],
   templateUrl: './health.html',
   styleUrls: ['./health.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HealthPage implements OnInit {
   protected readonly store = inject(HealthStore);
@@ -22,6 +22,6 @@ export class HealthPage implements OnInit {
   }
 
   protected navigateToChild(childId: string): void {
-    this.router.navigate(['/children', childId]);
+    this.router.navigate(['/families/children', childId]);
   }
 }

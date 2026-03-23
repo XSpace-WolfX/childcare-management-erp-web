@@ -3,7 +3,7 @@ import { Observable, of, delay } from 'rxjs';
 import { ChildInGroup } from '../../../core/models/child-group';
 import { getAllChildren } from '../../../core/mock/childcare-mock-db';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class MockChildGroupApi {
   getAllChildren(): Observable<ChildInGroup[]> {
     const allChildren = getAllChildren();

@@ -1,14 +1,14 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { TodayStore } from '../data-access/today-store';
 import { ChildAttendanceView } from '../../../core/models/attendance-view';
 
 @Component({
   selector: 'ccm-today',
-  standalone: true,
   imports: [],
   templateUrl: './today.html',
   styleUrls: ['./today.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TodayPage {
   protected readonly store = inject(TodayStore);
@@ -82,6 +82,6 @@ export class TodayPage {
   }
 
   protected navigateToChild(childId: string): void {
-    this.router.navigate(['/children', childId]);
+    this.router.navigate(['/families/children', childId]);
   }
 }

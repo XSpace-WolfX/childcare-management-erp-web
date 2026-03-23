@@ -1,15 +1,19 @@
 import { Injectable, computed, signal, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MockAttendanceApi } from './mock-attendance-api';
-import { ChildAttendanceView, AttendanceSummary, CriticalAlert } from '../../../core/models/attendance-view';
+import {
+  ChildAttendanceView,
+  AttendanceSummary,
+  CriticalAlert,
+} from '../../../core/models/attendance-view';
 
 @Injectable()
 export class TodayStore {
   private readonly api = inject(MockAttendanceApi);
 
   private readonly attendanceData = signal<ChildAttendanceView[]>([]);
-  private readonly loading = signal<boolean>(false);
-  private readonly searchTerm = signal<string>('');
+  private readonly loading = signal(false);
+  private readonly searchTerm = signal('');
 
   readonly attendance = this.attendanceData.asReadonly();
   readonly isLoading = this.loading.asReadonly();
@@ -74,7 +78,7 @@ export class TodayStore {
     return this.attendanceData().filter((child) => child.name.toLowerCase().includes(term));
   });
 
-  readonly hasActiveSearch = computed<boolean>(() => {
+  readonly hasActiveSearch = computed(() => {
     return this.searchTerm().trim().length > 0;
   });
 

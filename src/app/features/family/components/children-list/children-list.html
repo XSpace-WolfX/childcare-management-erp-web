@@ -1,0 +1,27 @@
+<section class="children-section">
+  <h3>Enfants ({{ children().length }})</h3>
+
+  @if (children().length > 0) {
+    <div class="children-list">
+      @for (child of children(); track child.id) {
+        <button
+          type="button"
+          class="child-card"
+          [id]="'child-' + child.id"
+          [class.selected-child]="isChildSelected(child.id)"
+          (click)="onChildClick(child.id)"
+        >
+          <h4>{{ child.firstName }} {{ child.lastName }}</h4>
+          <p>
+            <strong>Date de naissance:</strong> {{ child.birthDate | date: 'dd/MM/yyyy' }}
+          </p>
+          <p><strong>Âge:</strong> {{ child.age }} ans</p>
+        </button>
+      }
+    </div>
+  } @else {
+    <div class="empty-state">
+      <p>Aucun enfant enregistré pour cette famille</p>
+    </div>
+  }
+</section>

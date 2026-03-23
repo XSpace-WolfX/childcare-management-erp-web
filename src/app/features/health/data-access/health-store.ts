@@ -8,7 +8,7 @@ export class HealthStore {
   private readonly api = inject(MockHealthApi);
 
   private readonly childrenData = signal<ChildHealthView[]>([]);
-  private readonly loading = signal<boolean>(false);
+  private readonly loading = signal(false);
   private readonly activeFilters = signal<Set<HealthFilter>>(new Set());
 
   readonly children = this.childrenData.asReadonly();

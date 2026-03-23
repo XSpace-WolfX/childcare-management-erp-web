@@ -122,12 +122,6 @@
   tbody {
     tr.family-row {
       border-bottom: 1px solid #e8e8e8;
-      cursor: pointer;
-      transition: background-color 0.15s ease;
-
-      &:hover {
-        background-color: #f9f9f9;
-      }
 
       &:last-child {
         border-bottom: none;
@@ -178,6 +172,9 @@
     padding: 2px 4px;
     border-radius: 3px;
     display: inline-block;
+    background: none;
+    border: none;
+    font: inherit;
 
     &:hover {
       color: #004499;

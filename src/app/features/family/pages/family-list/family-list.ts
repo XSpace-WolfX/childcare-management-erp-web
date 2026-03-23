@@ -1,4 +1,11 @@
-import { Component, inject, OnInit, computed, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnInit,
+  computed,
+  signal,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { FamiliesStore } from '../../data-access/family-store';
 import { Family } from '../../../../core/models/family';
@@ -10,10 +17,10 @@ interface FamilyRowStatus {
 
 @Component({
   selector: 'ccm-families-list',
-  standalone: true,
   imports: [],
   templateUrl: './family-list.html',
   styleUrls: ['./family-list.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FamiliesListPage implements OnInit {
   private store = inject(FamiliesStore);
@@ -68,7 +75,9 @@ export class FamiliesListPage implements OnInit {
 
     if (
       family.children?.some(
-        (child) => child.firstName.toLowerCase().includes(query) || child.lastName.toLowerCase().includes(query),
+        (child) =>
+          child.firstName.toLowerCase().includes(query) ||
+          child.lastName.toLowerCase().includes(query),
       )
     ) {
       return true;
@@ -87,7 +96,11 @@ export class FamiliesListPage implements OnInit {
 
   private deriveFamilyStatus(family: Family): FamilyRowStatus {
     const hasIncompleteData =
-      !family.phoneNumber || !family.email || !family.address || !family.children || family.children.length === 0;
+      !family.phoneNumber ||
+      !family.email ||
+      !family.address ||
+      !family.children ||
+      family.children.length === 0;
 
     if (hasIncompleteData) {
       return { status: 'incomplet', label: 'Incomplet' };
@@ -98,12 +111,12 @@ export class FamiliesListPage implements OnInit {
 
   navigateToChild(childId: string, event: Event): void {
     event.stopPropagation();
-    this.router.navigate(['/children', childId]);
+    this.router.navigate(['/families/children', childId]);
   }
 
   navigateToFirstChild(family: Family): void {
     if (family.children && family.children.length > 0) {
-      this.router.navigate(['/children', family.children[0].id]);
+      this.router.navigate(['/families/children', family.children[0].id]);
     }
   }
 

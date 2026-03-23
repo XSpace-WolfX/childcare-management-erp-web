@@ -1,0 +1,51 @@
+<div class="subsection">
+  <div class="subsection-header">
+    <h5>Informations financières</h5>
+    @if (!isEditing()) {
+      <button type="button" class="edit-subsection-button" (click)="enterEditMode()">
+        {{ financialInformation() ? 'Modifier' : 'Ajouter' }}
+      </button>
+    }
+  </div>
+
+  @if (isEditing()) {
+    <form
+      [formGroup]="financialInformationForm"
+      (ngSubmit)="onSave()"
+      class="subsection-edit-form"
+    >
+      <div class="form-field">
+        <label for="monthlyIncome">Revenu mensuel (€)</label>
+        <input type="number" id="monthlyIncome" formControlName="monthlyIncome" />
+      </div>
+      <div class="form-field">
+        <label for="employmentType">Type d'emploi</label>
+        <input type="text" id="employmentType" formControlName="employmentType" />
+      </div>
+      <div class="form-field">
+        <label for="fiNotes">Notes</label>
+        <textarea id="fiNotes" formControlName="notes" rows="3"></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="save-button">Enregistrer</button>
+        <button type="button" class="cancel-button" (click)="cancelEdit()">Annuler</button>
+      </div>
+    </form>
+  } @else {
+    @if (financialInformation()) {
+      <div class="subsection-content">
+        @if (financialInformation()!.monthlyIncome) {
+          <p><strong>Revenu mensuel:</strong> {{ financialInformation()!.monthlyIncome }} €</p>
+        }
+        @if (financialInformation()!.employmentType) {
+          <p><strong>Type d'emploi:</strong> {{ financialInformation()!.employmentType }}</p>
+        }
+        @if (financialInformation()!.notes) {
+          <p><strong>Notes:</strong> {{ financialInformation()!.notes }}</p>
+        }
+      </div>
+    } @else {
+      <p class="not-provided">Non renseignées</p>
+    }
+  }
+</div>

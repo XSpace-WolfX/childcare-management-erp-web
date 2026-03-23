@@ -8,7 +8,7 @@ export class ChildGroupStore {
   private readonly api = inject(MockChildGroupApi);
 
   private readonly childrenData = signal<ChildInGroup[]>([]);
-  private readonly loading = signal<boolean>(false);
+  private readonly loading = signal(false);
 
   readonly children = this.childrenData.asReadonly();
   readonly isLoading = this.loading.asReadonly();
